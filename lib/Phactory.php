@@ -8,7 +8,7 @@ class Phactory {
 
     private function __construct() {}
 
-    public static function connect($pdo) {
+    public static function setConnection($pdo) {
         self::$_pdo = $pdo;
     }
 
