@@ -37,7 +37,22 @@ class Phactory {
     }
 
     public static function get($table, $byColumn) {
-        //TODO get PhactoryRow from $table by $byColumn key => value
+        $column = array_keys($byColumn);
+        $column = $column[0];
+        $value = $byColumn[$column];
+
+        $sql = "SELECT *
+                FROM `$table`
+                WHERE `$column` = :value";
+        $stmt = self::$_pdo->prepare($sql);
+        $stmt->execute(array(':value' => $value));
+        $result = $stmt->fetch();
+        
+        if(false === $result) {
+            return null;
+        }
+
+        return new Phactory_Row($table, $result);
     }
 
     public static function teardown() {
