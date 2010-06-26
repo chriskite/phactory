@@ -1,4 +1,6 @@
 <?
+require_once('Phactory/Blueprint.php');
+require_once('Phactory/Row.php');
 
 class Phactory {
     protected static $_tables = array();
@@ -15,11 +17,11 @@ class Phactory {
     }
 
     public static function define($table, $defaults) {
-        self::$_tables[$table] = new PhactoryBlueprint($table, $defaults);
+        self::$_tables[$table] = new Phactory_Blueprint($table, $defaults);
     }
 
     public static function create($table, $overrides = array()) {
-        if(! ($blueprint = self::$_tables[$table])) ) {
+        if(! ($blueprint = self::$_tables[$table]) ) {
             throw new Exception("No table defined for '$table'");
         }
             

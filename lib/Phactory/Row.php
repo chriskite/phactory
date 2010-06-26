@@ -1,7 +1,7 @@
 <?
 
-class PhactoryRow {
-    const PROTECTED_PROPERTIES = array('_table');
+class Phactory_Row {
+    protected static $_protected_properties= array('_table');
     protected $_table;
 
     public function __construct($table, $data) {
@@ -19,7 +19,7 @@ class PhactoryRow {
         $data = array();
         $params = array();
         foreach($this as $key => $value) {
-            if(!in_array(self::PROTECTED_PROPERTIES, $key)) {
+            if(!in_array(self::$_protected_properties, $key)) {
                 $data["`$key`"] = ":$key";
                 $params[":$key"] = $value;
             }

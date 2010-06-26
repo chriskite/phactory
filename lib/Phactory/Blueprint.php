@@ -1,6 +1,6 @@
 <?
 
-class PhactoryBlueprint {
+class Phactory_Blueprint {
     protected $_table;
     protected $_defaults;
 
@@ -10,6 +10,6 @@ class PhactoryBlueprint {
     }
 
     public function create() {
-        return new PhactoryRow($this->_table, $this->_defaults);
+        return new Phactory_Row($this->_table, $this->_defaults);
     }
 }
