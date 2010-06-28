@@ -43,8 +43,8 @@ class Phactory {
      * @param string $table name of the table in the database
      * @param array $defaults key => value pairs of column => value
      */
-    public static function define($table, $defaults) {
-        self::$_tables[$table] = new Phactory_Blueprint($table, $defaults);
+    public static function define($table, $defaults, $associations = array()) {
+        self::$_tables[$table] = new Phactory_Blueprint($table, $defaults, $associations);
     }
 
     /*
@@ -58,11 +58,26 @@ class Phactory {
      * @return object Phactory_Row
      */
     public static function create($table, $overrides = array()) {
+        return self::createWithAssociations($table, array(), $overrides);
+    }
+
+    /*
+     * Instantiate a row in the specified table, optionally
+     * overriding some or all of the default values.
+     * The row is saved to the database, and returned
+     * as a Phactory_Row.
+     *
+     * @param string $table name of the table
+     * @param array $associations [table name] => [Phactory_Row]
+     * @param array $overrides key => value pairs of column => value
+     * @return object Phactory_Row
+     */
+    public static function createWithAssociations($table, $associations = array(), $overrides = array()) {
         if(! ($blueprint = self::$_tables[$table]) ) {
             throw new Exception("No table defined for '$table'");
         }
             
-        $row = $blueprint->create();
+        $row = $blueprint->create($associations);
 
         foreach($overrides as $field => $value) {
             $row->$field = $value;
