@@ -65,7 +65,7 @@ class Phactory {
         $row = $blueprint->create();
 
         foreach($overrides as $field => $value) {
-            $row[$field] = $value;
+            $row->$field = $value;
         }
      
         $row->save();
@@ -124,8 +124,8 @@ class Phactory {
      * @param string $table name of the table
      */
     protected static function _truncate($table) {
-        $sql = "TRUNCATE :table";
+        $sql = "DELETE FROM $table";
         $stmt = self::$_pdo->prepare($sql);
-        return $tmt->execute(array(':table' => $table));
+        return $stmt->execute();
     }
 }

@@ -1,14 +1,13 @@
 <?
 
 class Phactory_Row {
-    protected static $_protected_properties= array('_table');
     protected $_table;
+    protected $_storage = array();
 
     public function __construct($table, $data) {
         $this->_table = $table;
-
         foreach($data as $key => $value) {
-            $this->$$key = $value;
+            $this->_storage[$key] = $value;
         }
     }
 
@@ -18,11 +17,9 @@ class Phactory_Row {
 
         $data = array();
         $params = array();
-        foreach($this as $key => $value) {
-            if(!in_array(self::$_protected_properties, $key)) {
-                $data["`$key`"] = ":$key";
-                $params[":$key"] = $value;
-            }
+        foreach($this->_storage as $key => $value) {
+            $data["`$key`"] = ":$key";
+            $params[":$key"] = $value;
         }
 
         $keys = array_keys($data);
@@ -35,5 +32,13 @@ class Phactory_Row {
 
         $stmt = $pdo->prepare($sql);
         return $stmt->execute($params);
+    }
+
+    public function __get($key) {
+        return $this->_storage[$key];
+    }
+
+    public function __set($key, $value) {
+        $this->_storage[$key] = $value;
     }
 }
