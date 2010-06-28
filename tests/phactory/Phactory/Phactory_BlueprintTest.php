@@ -36,9 +36,6 @@ class Phactory_BlueprintTest extends PHPUnit_Framework_TestCase
         $this->pdo->exec("DROP TABLE `user`");
     }
 
-    /**
-     * @todo Implement testCreate().
-     */
     public function testCreate()
     {
 		$name = 'testuser';
