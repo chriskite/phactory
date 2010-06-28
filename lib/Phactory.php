@@ -101,13 +101,21 @@ class Phactory {
     }
 
     /*
-     * Truncates every table with a blueprint defined
-     * via Phactory::define().
+     * Delete created Phactory_Row objects from the database.
      */
-    public static function teardown() {
+    public static function recall() {
         foreach(self::$_tables as $table => $blueprint) {
             self::_truncate($table);
         }
+    }
+
+    /*
+     * Delete created objects from the database,
+     * and clear all defined blueprints.
+     */
+    public static function reset() {
+        self::recall();
+        self::$_tables = array();
     }
 
     /*
