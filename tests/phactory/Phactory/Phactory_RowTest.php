@@ -36,9 +36,6 @@ class Phactory_RowTest extends PHPUnit_Framework_TestCase
         $this->pdo->exec("DROP TABLE `user`");
     }
 
-    /**
-     * @todo Implement testSave().
-     */
     public function testSave()
     {
 		$name = "testuser";
