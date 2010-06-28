@@ -9,6 +9,7 @@ require_once PHACTORY_PATH . '/Phactory/Row.php';
  */
 class Phactory_RowTest extends PHPUnit_Framework_TestCase
 {
+	protected $pdo;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -16,6 +17,12 @@ class Phactory_RowTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+		$this->pdo = new PDO("sqlite:test.db");
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $this->pdo->exec("CREATE TABLE `user` ( name VARCHAR(256) )");
+
+        Phactory::setConnection($this->pdo);
     }
 
     /**
@@ -23,7 +30,10 @@ class Phactory_RowTest extends PHPUnit_Framework_TestCase
      * This method is called after a test is executed.
      */
     protected function tearDown()
-    {
+    {        
+		Phactory::reset();
+
+        $this->pdo->exec("DROP TABLE `user`");
     }
 
     /**
@@ -31,10 +41,18 @@ class Phactory_RowTest extends PHPUnit_Framework_TestCase
      */
     public function testSave()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$name = "testuser";
+		
+		//create Phactory_Row object and add user to table
+		$phactory_row = new Phactory_Row('user', array('name' => $name));
+		$phactory_row->save();
+		
+        // retrieve expected user from database
+        $stmt = $this->pdo->query("SELECT * FROM `user`");
+        $db_user = $stmt->fetch();
+
+		// test retrieved db row
+        $this->assertEquals($db_user['name'], $name);
     }
 }
 ?>

@@ -9,6 +9,7 @@ require_once PHACTORY_PATH . '/Phactory/Blueprint.php';
  */
 class Phactory_BlueprintTest extends PHPUnit_Framework_TestCase
 {
+	protected $pdo;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -16,6 +17,12 @@ class Phactory_BlueprintTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+	    $this->pdo = new PDO("sqlite:test.db");
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $this->pdo->exec("CREATE TABLE `user` ( name VARCHAR(256) )");
+
+        Phactory::setConnection($this->pdo);
     }
 
     /**
@@ -24,6 +31,9 @@ class Phactory_BlueprintTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        Phactory::reset();
+
+        $this->pdo->exec("DROP TABLE `user`");
     }
 
     /**
@@ -31,10 +41,15 @@ class Phactory_BlueprintTest extends PHPUnit_Framework_TestCase
      */
     public function testCreate()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$name = 'testuser';
+	
+		//create Phactory_Blueprint object and a new Phactory_Row object
+		$phactory_blueprint = new Phactory_Blueprint('user', array('name' => $name));
+		$phactory_row = $phactory_blueprint->create();
+		
+		//test $phactory_row is of type Phactory_Row and that object stored name correctly
+		$this->assertType('Phactory_Row', $phactory_row);
+		$this->assertEquals($phactory_row->name, $name); 
     }
 }
 ?>
