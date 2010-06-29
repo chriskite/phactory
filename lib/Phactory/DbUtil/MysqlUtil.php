@@ -1,6 +1,6 @@
 <?
 
-class Phactory_MysqlUtil {
+class Phactory_DbUtil_MysqlUtil {
 
 	public function __construct() {
 		$this->$_pdo = Phactory::getConnection();
