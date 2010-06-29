@@ -15,6 +15,30 @@ class Phactory_Blueprint {
         }
     }
 
+    public function setDefaults($defaults) {
+        $this->_defaults = $defaults;
+    }
+
+    public function addDefault($column, $value) {
+        $this->_defaults[$column] = $value;
+    }
+
+    public function removeDefault($column) {
+        unset($this->_defaults[$column]);
+    }
+
+    public function setAssociations($associations) {
+        $this->_associations = $associations;
+    }
+
+    public function addAssociation($name, $association) {
+        $this->_associations[$name] = $association;
+    }
+
+    public function removeAssociation($name) {
+        unset($this->_associations[$name]);
+    }
+
     /*
      * Reify a Blueprint as a Phactory_Row. Optionally use an array
      * of associated objects to set fk columns.
