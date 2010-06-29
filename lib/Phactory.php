@@ -134,6 +134,32 @@ class Phactory {
     }
 
     /*
+     * Create a many-to-one association object for use in define().
+     *
+     * @param string $to_table the table to associate with
+     * @param string $from_column the fk column on the left table
+     * @param string $to_column the pk column of the right table, or null to autodetect
+     *
+     * @return object Phactory_Association_ManyToOne
+     */
+    public static function manyToOne($to_table, $from_column, $to_column = null) {
+        return new Phactory_Association_ManyToOne($to_table, $from_column, $to_column);
+    }
+
+    /*
+     * Create a one-to-one association object for use in define().
+     *
+     * @param string $to_table the table to associate with
+     * @param string $from_column the fk column on the left table
+     * @param string $to_column the pk column of the right table, or null to autodetect
+     *
+     * @return object Phactory_Association_OneToOne
+     */
+    public static function oneToOne($to_table, $from_column, $to_column = null) {
+        return new Phactory_Association_OneToOne($to_table, $from_column, $to_column);
+    }
+
+    /*
      * Truncate table in the database.
      *
      * @param string $table name of the table
