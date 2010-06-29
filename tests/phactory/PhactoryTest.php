@@ -129,6 +129,33 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($role->id, $user->role_id);
     }
 
+    public function testCreateWithManyToManyAssociation() {
+        $this->pdo->exec("CREATE TABLE blog ( id INTEGER PRIMARY KEY, title TEXT )");
+        $this->pdo->exec("CREATE TABLE tag ( id INTEGER PRIMARY KEY, name TEXT )");
+        $this->pdo->exec("CREATE TABLE blogs_tags ( blog_id INTEGER, tag_id INTEGER )");
+
+        Phactory::define('tag',
+                         array('name' => 'Test Tag'));
+        Phactory::define('blog',
+                         array('title' => 'Test Title'),
+                         array('tag' => Phactory::manyToMany('tag', 'blogs_tags', 'id', 'blog_id', 'tag_id', 'id')));
+
+        $tag = Phactory::create('tag');
+        $blog = Phactory::createWithAssociations('blog', array('tag' => $tag));
+
+        $result = $this->pdo->query("SELECT * FROM blogs_tags");
+        $row = $result->fetch();
+        $result->closeCursor();
+
+        $this->assertNotEquals(false, $row);
+        $this->assertEquals($blog->getId(), $row['blog_id']);
+        $this->assertEquals($tag->getId(), $row['tag_id']);
+
+        $this->pdo->exec("DROP TABLE blog");
+        $this->pdo->exec("DROP TABLE tag");
+        $this->pdo->exec("DROP TABLE blogs_tags");
+    }
+
     public function testGet()
     {
         $name = 'testuser';

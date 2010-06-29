@@ -4,6 +4,7 @@ require_once('Phactory/Row.php');
 require_once('Phactory/DbUtilFactory.php');
 require_once('Phactory/Association/ManyToOne.php');
 require_once('Phactory/Association/OneToOne.php');
+require_once('Phactory/Association/ManyToMany.php');
 
 class Phactory {
     /*
@@ -80,15 +81,7 @@ class Phactory {
             throw new Exception("No table defined for '$table'");
         }
             
-        $row = $blueprint->create($associations);
-
-        foreach($overrides as $field => $value) {
-            $row->$field = $value;
-        }
-     
-        $row->save();
-
-        return $row;
+        return $blueprint->create($overrides, $associations);
     }
 
     /*
@@ -136,6 +129,10 @@ class Phactory {
         self::$_tables = array();
     }
 
+    public static function manyToMany($to_table, $from_column, $from_join_column, $to_join_column, $to_column = null) {
+        return new Phactory_Association_ManyToMany($to_table, $from_column, $from_join_column, $to_join_column, $to_column);
+    }
+
     /*
      * Create a many-to-one association object for use in define().
      *
@@ -168,8 +165,10 @@ class Phactory {
      * @param string $table name of the table
      */
     protected static function _truncate($table) {
-        $sql = "DELETE FROM $table";
-        $stmt = self::$_pdo->prepare($sql);
-        return $stmt->execute();
+        try {
+            $sql = "DELETE FROM $table";
+            $stmt = self::$_pdo->prepare($sql);
+            return $stmt->execute();
+        } catch(Exception $e) { }
     }
 }
