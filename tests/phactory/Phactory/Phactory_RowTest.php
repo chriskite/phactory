@@ -20,7 +20,7 @@ class Phactory_RowTest extends PHPUnit_Framework_TestCase
 		$this->pdo = new PDO("sqlite:test.db");
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $this->pdo->exec("CREATE TABLE `user` ( name VARCHAR(256) )");
+        $this->pdo->exec("CREATE TABLE `user` ( id INTEGER PRIMARY KEY, name TEXT )");
 
         Phactory::setConnection($this->pdo);
     }
@@ -34,6 +34,14 @@ class Phactory_RowTest extends PHPUnit_Framework_TestCase
 		Phactory::reset();
 
         $this->pdo->exec("DROP TABLE `user`");
+    }
+
+    public function testGetId()
+    {
+        $row = new Phactory_Row('user', array('name' => 'testuser'));
+        $row->save();
+
+        $this->assertEquals($row->getId(), $row->id);
     }
 
     public function testSave()

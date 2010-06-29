@@ -1,6 +1,9 @@
 <?
 require_once('Phactory/Blueprint.php');
 require_once('Phactory/Row.php');
+require_once('Phactory/DbUtilFactory.php');
+require_once('Phactory/Association/ManyToOne.php');
+require_once('Phactory/Association/OneToOne.php');
 
 class Phactory {
     /*

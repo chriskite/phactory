@@ -20,7 +20,8 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->pdo = new PDO("sqlite:test.db");
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $this->pdo->exec("CREATE TABLE `user` ( name VARCHAR(256) )");
+        $this->pdo->exec("CREATE TABLE `user` ( id INTEGER PRIMARY KEY, name TEXT, role_id INTEGER )");
+        $this->pdo->exec("CREATE TABLE `role` ( id INTEGER PRIMARY KEY, name TEXT )");
 
         Phactory::setConnection($this->pdo);
     }
@@ -34,6 +35,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         Phactory::reset();
 
         $this->pdo->exec("DROP TABLE `user`");
+        $this->pdo->exec("DROP TABLE `role`");
     }
 
     public function testSetConnection()
@@ -56,6 +58,19 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         Phactory::define('user', array('name' => 'testuser'));
 
         // @todo make define check that table exists when called
+    }
+
+    public function testDefineWithAssociations()
+    {
+        // define with explicit $to_column
+        Phactory::define('user',
+                         array('name' => 'testuser'),
+                         array('role' => Phactory::manyToOne('role', 'role_id', 'id')));
+
+        // definie with implicit $to_column
+        Phactory::define('user',
+                         array('name' => 'testuser'),
+                         array('role' => Phactory::manyToOne('role', 'role_id')));
     }
 
     public function testCreate()
@@ -97,6 +112,21 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
 
         // test retrieved db row
         $this->assertEquals($db_user['name'], $override_name);
+    }
+
+    public function testCreateWithAssociations()
+    {
+        Phactory::define('role',
+                         array('name' => 'admin'));
+        Phactory::define('user',
+                         array('name' => 'testuser'),
+                         array('role' => Phactory::manyToOne('role', 'role_id')));
+
+        $role = Phactory::create('role'); 
+        $user = Phactory::createWithAssociations('user', array('role' => $role));
+
+        $this->assertNotNull($role->id);
+        $this->assertEquals($role->id, $user->role_id);
     }
 
     public function testGet()

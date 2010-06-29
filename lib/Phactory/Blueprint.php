@@ -10,14 +10,8 @@ class Phactory_Blueprint {
         $this->_defaults = $defaults;
         $this->_associations = $associations;
 
-        $exception = new Exception("\$associations must be an array of Phactory_Association objects");
         if(!is_array($associations)) {
-            throw $exception;
-        }
-        foreach($this->_associations as $association) {
-            if(!$association instanceof Phactory_Association) {
-                throw $exception; 
-            }
+            throw new Exception("\$associations must be an array of Phactory_Association objects");
         }
     }
 
@@ -36,10 +30,11 @@ class Phactory_Blueprint {
                 }
 
                 $association = $this->_associations[$name];
-                $fk_column = $association->getFkColumn();
-                $assoc_keys[$row->$fk_column] = $row->getId();
+                $fk_column = $association->getFromColumn();
+                $assoc_keys[$fk_column] = $row->getId();
             }
         }
+
         return new Phactory_Row($this->_table, array_merge($this->_defaults, $assoc_keys));
     }
 }

@@ -12,10 +12,10 @@ class Phactory_DbUtilFactory {
 		switch ($db_type)
 		{
 			case 'mysql':
-				return new Phactory_MysqlUtil();
+				return new Phactory_DbUtil_MysqlUtil();
 				break;
 			case 'sqlite':
-				return new Phactory_SqliteUtil();
+				return new Phactory_DbUtil_SqliteUtil();
 				break;
 			default:
 				throw new Exception("DB type '$db_type' not found");
