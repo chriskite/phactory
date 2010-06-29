@@ -1,20 +1,11 @@
 <?
-require_once('../Phactory.php');
 
-class Phactory_MysqlUtil{
+class Phactory_MysqlUtil {
 
-	protected $_pdo;
-
-	public function __construct()
-	{ 
-		$this->setPdo();
-	}
-	
-	public function setPdo()
-	{
+	public function __construct() {
 		$this->$_pdo = Phactory::getConnection();
-	}
-	
+    }
+
 	public function getPrimaryKey($table)
 	{
 		$stmt = $this->$_pdo->prepare("SHOW KEYS FROM :table WHERE Key_name = 'PRIMARY'");

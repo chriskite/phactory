@@ -1,5 +1,4 @@
 <?
-require_once('../Phactory.php');
 
 class Phactory_SqliteUtil{
 
@@ -7,22 +6,23 @@ class Phactory_SqliteUtil{
 
 	public function __construct()
 	{ 
-		$this->setPdo();
-	}
-	
-	public function setPdo()
-	{
 		$this->$_pdo = Phactory::getConnection();
 	}
 	
 	public function getPrimaryKey($table)
 	{
-		// @TODO find out how to get primary_key columns from sqlite
-		$stmt = $this->$_pdo->prepare("");
+		$stmt = $this->$_pdo->prepare("SELECT `sql` FROM sqlite_master");
 		$stmt->execute();
-		$result = $stmt->fetch(PDO::FETCH_OBJ);
-		
-		return $result->Column_name;
+		$result = $stmt->fetch();
+        $sql = $result['sql'];	
+
+        $matches = array();
+        preg_match($sql, '/(.*)\s+.*\s+PRIMARY KEY/', $matches);
+
+        if(!$matches[1]) {
+            return null;
+        }
+		return $matches[1]; 
 	}
 
 }
