@@ -6,6 +6,7 @@ require_once('Phactory/DbUtilFactory.php');
 require_once('Phactory/Association/ManyToOne.php');
 require_once('Phactory/Association/OneToOne.php');
 require_once('Phactory/Association/ManyToMany.php');
+require_once('Inflector.php');
 
 class Phactory {
     /*
@@ -103,7 +104,8 @@ class Phactory {
         $column = array_keys($byColumn);
         $column = $column[0];
         $value = $byColumn[$column];
-
+        $table = Inflector::pluralize($table);
+        
         $sql = "SELECT *
                 FROM `$table`
                 WHERE `$column` = :value";
@@ -172,7 +174,8 @@ class Phactory {
      * @param string $table name of the table
      */
     protected static function _truncate($table) {
-        try {
+        $table= Inflector::pluralize($table);
+    	try {
             $sql = "DELETE FROM $table";
             $stmt = self::$_pdo->prepare($sql);
             return $stmt->execute();

@@ -20,8 +20,8 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->pdo = new PDO("sqlite:test.db");
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $this->pdo->exec("CREATE TABLE `user` ( id INTEGER PRIMARY KEY, name TEXT, role_id INTEGER )");
-        $this->pdo->exec("CREATE TABLE `role` ( id INTEGER PRIMARY KEY, name TEXT )");
+        $this->pdo->exec("CREATE TABLE `users` ( id INTEGER PRIMARY KEY, name TEXT, role_id INTEGER )");
+        $this->pdo->exec("CREATE TABLE `roles` ( id INTEGER PRIMARY KEY, name TEXT )");
 
         Phactory::setConnection($this->pdo);
     }
@@ -34,8 +34,8 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
     {
         Phactory::reset();
 
-        $this->pdo->exec("DROP TABLE `user`");
-        $this->pdo->exec("DROP TABLE `role`");
+        $this->pdo->exec("DROP TABLE `users`");
+        $this->pdo->exec("DROP TABLE `roles`");
     }
 
     public function testSetConnection()
@@ -73,12 +73,12 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         // define with explicit $to_column
         Phactory::define('user',
                          array('name' => 'testuser'),
-                         array('role' => Phactory::manyToOne('role', 'role_id', 'id')));
+                         array('role' => Phactory::manyToOne('roles', 'role_id', 'id')));
 
         // definie with implicit $to_column
         Phactory::define('user',
                          array('name' => 'testuser'),
-                         array('role' => Phactory::manyToOne('role', 'role_id')));
+                         array('role' => Phactory::manyToOne('roles', 'role_id')));
     }
 
     public function testCreate()
@@ -94,7 +94,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($user->name, $name);
 
         // retrieve expected row from database
-        $stmt = $this->pdo->query("SELECT * FROM `user`");
+        $stmt = $this->pdo->query("SELECT * FROM `users`");
         $db_user = $stmt->fetch();
 
         // test retrieved db row
@@ -115,7 +115,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($user->name, $override_name);
 
         // retrieve expected row from database
-        $stmt = $this->pdo->query("SELECT * FROM `user`");
+        $stmt = $this->pdo->query("SELECT * FROM `users`");
         $db_user = $stmt->fetch();
 
         // test retrieved db row
@@ -128,7 +128,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
                          array('name' => 'admin'));
         Phactory::define('user',
                          array('name' => 'testuser'),
-                         array('role' => Phactory::manyToOne('role', 'role_id')));
+                         array('role' => Phactory::manyToOne('roles', 'role_id')));
 
         $role = Phactory::create('role'); 
         $user = Phactory::createWithAssociations('user', array('role' => $role));
@@ -138,15 +138,15 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
     }
 
     public function testCreateWithManyToManyAssociation() {
-        $this->pdo->exec("CREATE TABLE blog ( id INTEGER PRIMARY KEY, title TEXT )");
-        $this->pdo->exec("CREATE TABLE tag ( id INTEGER PRIMARY KEY, name TEXT )");
+        $this->pdo->exec("CREATE TABLE blogs ( id INTEGER PRIMARY KEY, title TEXT )");
+        $this->pdo->exec("CREATE TABLE tags ( id INTEGER PRIMARY KEY, name TEXT )");
         $this->pdo->exec("CREATE TABLE blogs_tags ( blog_id INTEGER, tag_id INTEGER )");
 
         Phactory::define('tag',
                          array('name' => 'Test Tag'));
         Phactory::define('blog',
                          array('title' => 'Test Title'),
-                         array('tag' => Phactory::manyToMany('tag', 'blogs_tags', 'id', 'blog_id', 'tag_id', 'id')));
+                         array('tag' => Phactory::manyToMany('tags', 'blogs_tags', 'id', 'blog_id', 'tag_id', 'id')));
 
         $tag = Phactory::create('tag');
         $blog = Phactory::createWithAssociations('blog', array('tag' => $tag));
@@ -159,8 +159,8 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($blog->getId(), $row['blog_id']);
         $this->assertEquals($tag->getId(), $row['tag_id']);
 
-        $this->pdo->exec("DROP TABLE blog");
-        $this->pdo->exec("DROP TABLE tag");
+        $this->pdo->exec("DROP TABLE blogs");
+        $this->pdo->exec("DROP TABLE tags");
         $this->pdo->exec("DROP TABLE blogs_tags");
     }
 
@@ -202,21 +202,13 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         Phactory::recall();
 
         // test that the object is gone from the db
-        $stmt = $this->pdo->query("SELECT * FROM `user`");
+        $stmt = $this->pdo->query("SELECT * FROM `users`");
         $db_user = $stmt->fetch();
         $this->assertFalse($db_user);
 
         // test that the blueprints weren't destroyed too
         $user = Phactory::create('user');
         $this->assertEquals($user->name, $name);
-    }
-
-    public function testReset()
-    {
-        /* @todo determine if there is a way to test that
-         * reset() destroys the blueprints.
-         */
-         $this->markTestIncomplete("Don't know how to test this yet.");
     }
 }
 ?>

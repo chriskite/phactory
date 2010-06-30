@@ -7,7 +7,7 @@ class Phactory_Blueprint {
     protected $_sequence;
 
     public function __construct($table, $defaults, $associations = array()) {
-        $this->_table = $table;
+        $this->_table = Inflector::pluralize($table);
         $this->_defaults = $defaults;
         $this->_associations = $associations;
         $this->_sequence = new Phactory_Sequence();
