@@ -156,6 +156,16 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->pdo->exec("DROP TABLE blogs_tags");
     }
 
+    public function testDefineAndCreateWithSequence()
+    {
+        Phactory::define('user', array('name' => 'user\$n'));
+
+        for($i = 0; $i < 10; $i++) {
+            $user = Phactory::create('user');
+            $this->assertEquals("user$i", $user->name);
+        }
+    }
+
     public function testGet()
     {
         $name = 'testuser';

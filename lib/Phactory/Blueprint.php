@@ -4,11 +4,13 @@ class Phactory_Blueprint {
     protected $_table;
     protected $_defaults;
     protected $_associations;
+    protected $_sequence;
 
     public function __construct($table, $defaults, $associations = array()) {
         $this->_table = $table;
         $this->_defaults = $defaults;
         $this->_associations = $associations;
+        $this->_sequence = new Phactory_Sequence();
 
         if(!is_array($associations)) {
             throw new Exception("\$associations must be an array of Phactory_Association objects");
@@ -64,8 +66,12 @@ class Phactory_Blueprint {
                 }
             }
         }
+    
+        $data = array_merge($this->_defaults, $assoc_keys);
 
-        $row = new Phactory_Row($this->_table, array_merge($this->_defaults, $assoc_keys));
+        $this->_evalSequence($data);
+
+        $row = new Phactory_Row($this->_table, $data); 
 
         if($overrides) {
             foreach($overrides as $field => $value) {
@@ -80,6 +86,15 @@ class Phactory_Blueprint {
         }
 
         return $row;
+    }
+
+    protected function _evalSequence(&$data) {
+        $n = $this->_sequence->next();
+        foreach($data as &$value) {
+            if(false !== strpos($value, '$')) {
+                $value = eval('return "'. stripslashes($value) . '";');
+            }
+        }
     }
 
     protected function _associateManyToMany($row, $many_to_many) {
