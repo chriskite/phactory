@@ -56,8 +56,16 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
     {
         // test that define() doesn't throw an exception when called correctly
         Phactory::define('user', array('name' => 'testuser'));
+    }
 
-        // @todo make define check that table exists when called
+
+    public function testDefineWithBlueprint()
+    {
+        $blueprint = new Phactory_Blueprint('user', array('name' => 'testuser'));
+        Phactory::define('user', $blueprint);
+
+        $user = Phactory::create('user');
+        $this->assertEquals('testuser', $user->name);
     }
 
     public function testDefineWithAssociations()
@@ -160,7 +168,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
     {
         Phactory::define('user', array('name' => 'user\$n'));
 
-        for($i = 0; $i < 10; $i++) {
+        for($i = 0; $i < 5; $i++) {
             $user = Phactory::create('user');
             $this->assertEquals("user$i", $user->name);
         }

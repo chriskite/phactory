@@ -46,10 +46,16 @@ class Phactory {
      * a row in the specified table.
      *
      * @param string $table name of the table in the database
-     * @param array $defaults key => value pairs of column => value
+     * @param array $defaults key => value pairs of column => value, or a Phactory_Blueprint
+     * @param array $associations array of Phactory_Associations
      */
     public static function define($table, $defaults, $associations = array()) {
-        self::$_tables[$table] = new Phactory_Blueprint($table, $defaults, $associations);
+        if($defaults instanceof Phactory_Blueprint) {
+            $blueprint = $defaults;
+        } else {
+            $blueprint = new Phactory_Blueprint($table, $defaults, $associations);
+        }
+        self::$_tables[$table] = $blueprint;
     }
 
     /*
