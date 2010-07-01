@@ -3,7 +3,6 @@
 class Phactory_Row {
     protected $_table;
     protected $_storage = array();
-    protected $_id;
 
     public function __construct($table, $data) {
         $this->_table = $table;
@@ -13,7 +12,8 @@ class Phactory_Row {
     }
 
     public function getId() {
-        return $this->_id;
+        $pk = $this->_getPrimaryKey();
+        return $this->_storage[$pk];
     }
 
     public function save() {
@@ -38,12 +38,10 @@ class Phactory_Row {
         $stmt = $pdo->prepare($sql);
         $r = $stmt->execute($params);
 
-        $this->_id = $pdo->lastInsertId();
+        $id = $pdo->lastInsertId();
 
-        $db_util = Phactory_DbUtilFactory::getDbUtil();
-        $pk = $db_util->getPrimaryKey($this->_table);
-        if($pk) { 
-            $this->_storage[$pk] = $this->_id;
+        if($pk = $this->_getPrimaryKey()) { 
+            $this->_storage[$pk] = $id;
         }
 
         return $r;
@@ -55,5 +53,10 @@ class Phactory_Row {
 
     public function __set($key, $value) {
         $this->_storage[$key] = $value;
+    }
+
+    protected function _getPrimaryKey() {
+        $db_util = Phactory_DbUtilFactory::getDbUtil();
+        return $db_util->getPrimaryKey($this->_table);
     }
 }

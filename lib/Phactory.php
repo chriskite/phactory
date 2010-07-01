@@ -138,8 +138,8 @@ class Phactory {
         self::$_tables = array();
     }
 
-    public static function manyToMany($to_table, $from_column, $from_join_column, $to_join_column, $to_column = null) {
-        return new Phactory_Association_ManyToMany($to_table, $from_column, $from_join_column, $to_join_column, $to_column);
+    public static function manyToMany($to_table, $join_table, $from_column, $from_join_column, $to_join_column, $to_column = null) {
+        return new Phactory_Association_ManyToMany($to_table, $join_table, $from_column, $from_join_column, $to_join_column, $to_column);
     }
 
     /*

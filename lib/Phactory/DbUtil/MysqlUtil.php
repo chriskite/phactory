@@ -3,15 +3,13 @@
 class Phactory_DbUtil_MysqlUtil {
 
 	public function __construct() {
-		$this->$_pdo = Phactory::getConnection();
+		$this->_pdo = Phactory::getConnection();
     }
 
 	public function getPrimaryKey($table)
 	{
-		$stmt = $this->$_pdo->prepare("SHOW KEYS FROM :table WHERE Key_name = 'PRIMARY'");
-		$stmt->execute(array(":table" => $table));
-		$result = $stmt->fetch(PDO::FETCH_OBJ);
-		
-		return $result->Column_name;
+		$stmt = $this->_pdo->query("SHOW KEYS FROM `$table` WHERE Key_name = 'PRIMARY'");
+		$result = $stmt->fetch();
+		return $result['Column_name'];
 	}
 }

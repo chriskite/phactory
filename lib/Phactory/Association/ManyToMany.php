@@ -7,7 +7,6 @@ class Phactory_Association_ManyToMany extends Phactory_Association_ManyToOne {
 
     public function __construct($to_table, $join_table, $from_column, $from_join_column, $to_join_column, $to_column = null) {
         parent::__construct($to_table, $from_column, $to_column);
-
         $this->_join_table = $join_table;
         $this->_from_join_column = $from_join_column;
         $this->_to_join_column = $to_join_column;
