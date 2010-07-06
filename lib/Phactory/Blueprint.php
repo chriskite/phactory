@@ -6,8 +6,8 @@ class Phactory_Blueprint {
     protected $_associations;
     protected $_sequence;
 
-    public function __construct($table, $defaults, $associations = array()) {
-        $this->_table = Inflector::pluralize($table);
+    public function __construct($name, $defaults, $associations = array()) {
+        $this->_table = new Phactory_Table($name); 
         $this->_defaults = $defaults;
         $this->_associations = $associations;
         $this->_sequence = new Phactory_Sequence();
@@ -86,6 +86,17 @@ class Phactory_Blueprint {
         }
 
         return $row;
+    }
+
+    /*
+     * Truncate table in the database.
+     */
+    public function recall() {
+    	try {
+            $sql = "DELETE FROM {$this->_table->getName()}";
+            $stmt = Phactory::getConnection()->prepare($sql);
+            return $stmt->execute();
+        } catch(Exception $e) { }
     }
 
     protected function _evalSequence(&$data) {

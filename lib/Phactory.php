@@ -1,5 +1,6 @@
 <?
 require_once('Phactory/Sequence.php');
+require_once('Phactory/Table.php');
 require_once('Phactory/Blueprint.php');
 require_once('Phactory/Row.php');
 require_once('Phactory/DbUtilFactory.php');
@@ -12,7 +13,7 @@ class Phactory {
     /*
      * Array of table name => Phactory_Blueprint
      */
-    protected static $_tables = array();
+    protected static $_blueprints = array();
 
     /*
      * PDO database connection
@@ -46,17 +47,17 @@ class Phactory {
      * Define the default values to use when constructing
      * a row in the specified table.
      *
-     * @param string $table name of the table in the database
-     * @param array $defaults key => value pairs of column => value, or a Phactory_Blueprint
-     * @param array $associations array of Phactory_Associations
+     * @param string $blueprint_name singular name of the table in the database
+     * @param array $defaults key => value pairs of column => value, or a phactory_blueprint
+     * @param array $associations array of phactory_associations
      */
-    public static function define($table, $defaults, $associations = array()) {
+    public static function define($blueprint_name, $defaults, $associations = array()) {
         if($defaults instanceof Phactory_Blueprint) {
             $blueprint = $defaults;
         } else {
-            $blueprint = new Phactory_Blueprint($table, $defaults, $associations);
+            $blueprint = new Phactory_Blueprint($blueprint_name, $defaults, $associations);
         }
-        self::$_tables[$table] = $blueprint;
+        self::$_blueprints[$blueprint_name] = $blueprint;
     }
 
     /*
@@ -79,14 +80,14 @@ class Phactory {
      * The row is saved to the database, and returned
      * as a Phactory_Row.
      *
-     * @param string $table name of the table
+     * @param string $blueprint_name name of the blueprint to use 
      * @param array $associations [table name] => [Phactory_Row]
      * @param array $overrides key => value pairs of column => value
      * @return object Phactory_Row
      */
-    public static function createWithAssociations($table, $associations = array(), $overrides = array()) {
-        if(! ($blueprint = self::$_tables[$table]) ) {
-            throw new Exception("No table defined for '$table'");
+    public static function createWithAssociations($blueprint_name, $associations = array(), $overrides = array()) {
+        if(! ($blueprint = self::$_blueprints[$blueprint_name]) ) {
+            throw new Exception("No blueprint defined for '$blueprint_name'");
         }
             
         return $blueprint->create($overrides, $associations);
@@ -96,18 +97,18 @@ class Phactory {
      * Get a row from the database as a Phactory_Row.
      * $byColumn is like array('id' => 123).
      *
-     * @param string $table name of the table
+     * @param string $table_name name of the table 
      * @param array $byColumn
      * @return object Phactory_Row
      */
-    public static function get($table, $byColumn) {
+    public static function get($table_name, $byColumn) {
         $column = array_keys($byColumn);
         $column = $column[0];
         $value = $byColumn[$column];
-        $table = Inflector::pluralize($table);
+        $table_name = Inflector::pluralize($table_name);
         
         $sql = "SELECT *
-                FROM `$table`
+                FROM `$table_name`
                 WHERE `$column` = :value";
         $stmt = self::$_pdo->prepare($sql);
         $stmt->execute(array(':value' => $value));
@@ -117,6 +118,7 @@ class Phactory {
             return null;
         }
 
+        $table = new Phactory_Table($table_name);
         return new Phactory_Row($table, $result);
     }
 
@@ -124,8 +126,8 @@ class Phactory {
      * Delete created Phactory_Row objects from the database.
      */
     public static function recall() {
-        foreach(self::$_tables as $table => $blueprint) {
-            self::_truncate($table);
+        foreach(self::$_blueprints as $blueprint) {
+            $blueprint->recall();
         }
     }
 
@@ -135,7 +137,7 @@ class Phactory {
      */
     public static function reset() {
         self::recall();
-        self::$_tables = array();
+        self::$_blueprints = array();
     }
 
     public static function manyToMany($to_table, $join_table, $from_column, $from_join_column, $to_join_column, $to_column = null) {
@@ -168,17 +170,5 @@ class Phactory {
         return new Phactory_Association_OneToOne($to_table, $from_column, $to_column);
     }
 
-    /*
-     * Truncate table in the database.
-     *
-     * @param string $table name of the table
-     */
-    protected static function _truncate($table) {
-        $table= Inflector::pluralize($table);
-    	try {
-            $sql = "DELETE FROM $table";
-            $stmt = self::$_pdo->prepare($sql);
-            return $stmt->execute();
-        } catch(Exception $e) { }
-    }
+
 }
