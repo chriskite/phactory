@@ -7,15 +7,18 @@ class Phactory_Inflector extends Inflector {
     public function __construct() { }
 	
 	public static function pluralize($word){
-		if(self::$_singular_plural[$word] != null){
-			return self::$_singular_plural[$word];
-		}else{
-			return parent::pluralize($word);
+		foreach(self::$_singular_plural as $sp)
+		{
+			if($sp['singular'] == $word){
+				return $sp['plural'];
+			}else{
+				return parent::pluralize($word);
+			}
 		}
 	}
 
 	public static function setSingularPlural($singular_plural){
-		self::$_singular_plural = $singular_plural;
+		self::$_singular_plural[] = $singular_plural;
 	}
 	
 }

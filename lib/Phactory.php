@@ -8,7 +8,7 @@ require_once('Phactory/Association/ManyToOne.php');
 require_once('Phactory/Association/OneToOne.php');
 require_once('Phactory/Association/ManyToMany.php');
 require_once('Inflector.php');
-require_once('Phactory/PhactoryInflector.php');
+require_once('Phactory/Inflector.php');
 
 
 class Phactory {
@@ -110,7 +110,7 @@ class Phactory {
         $table_name = Phactory_Inflector::pluralize($table_name);
         
         $sql = "SELECT *
-                FROM `$table_name`
+                FROM `$table_name`	
                 WHERE `$column` = :value";
         $stmt = self::$_pdo->prepare($sql);
         $stmt->execute(array(':value' => $value));
@@ -172,13 +172,15 @@ class Phactory {
         return new Phactory_Association_OneToOne($to_table, $from_column, $to_column);
     }
 	/*
-	 * Create a list of inflection Exceptions Example: array("deer" => "deer")
+	 * Create a list of inflection Exceptions Example: array("singular" => "deer", "plural" => "deer")
 	 *
-	 * @param array($singular => $plural) singular form of the word and plural form of the word if it doesn't end in "s".
+	 * @param string $singular singular form of the word.
+	 * @param string $plural plural form of the word.
 	 *
 	 * @return object Phactory_Inflector
 	 */
-	public static function setInflection($singular_plural){
+	public static function setInflection($singular, $plural){
+		$singular_plural = array("singular" => $singular, "plural" => $plural);
 		Phactory_Inflector::setSingularPlural($singular_plural);
 	}
 
