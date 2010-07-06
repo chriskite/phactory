@@ -25,4 +25,9 @@ class Phactory_DbUtil_SqliteUtil{
 		return $matches[1]; 
 	}
 
+    public function disableForeignKeys() {
+    }
+
+    public function enableForeignKeys() {
+    }
 }

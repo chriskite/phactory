@@ -92,11 +92,14 @@ class Phactory_Blueprint {
      * Truncate table in the database.
      */
     public function recall() {
+        $db_util = Phactory_DbUtilFactory::getDbUtil();
+        $db_util->disableForeignKeys();
     	try {
             $sql = "DELETE FROM {$this->_table->getName()}";
             $stmt = Phactory::getConnection()->prepare($sql);
             return $stmt->execute();
         } catch(Exception $e) { }
+        $db_util->enableForeignKeys();
     }
 
     protected function _evalSequence(&$data) {
