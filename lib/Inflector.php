@@ -51,7 +51,7 @@ class Inflector
     * @param    string    $word    English noun to pluralize
     * @return string Plural noun
     */
-    function pluralize($word)
+    public static function pluralize($word)
     {
         $plural = array(
         '/(quiz)$/i' => '\1zes',

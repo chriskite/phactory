@@ -6,8 +6,7 @@ class Phactory_Table {
 
     public function __construct($singular_name) {
         $this->_singular = $singular_name;
-        $inflector = new Inflector();
-        $this->_name = $inflector->pluralize($singular_name);
+        $this->_name = Phactory_Inflector::pluralize($singular_name);
     }
 
     public function getName() {

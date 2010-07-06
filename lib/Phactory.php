@@ -8,6 +8,8 @@ require_once('Phactory/Association/ManyToOne.php');
 require_once('Phactory/Association/OneToOne.php');
 require_once('Phactory/Association/ManyToMany.php');
 require_once('Inflector.php');
+require_once('Phactory/PhactoryInflector.php');
+
 
 class Phactory {
     /*
@@ -105,7 +107,7 @@ class Phactory {
         $column = array_keys($byColumn);
         $column = $column[0];
         $value = $byColumn[$column];
-        $table_name = Inflector::pluralize($table_name);
+        $table_name = Phactory_Inflector::pluralize($table_name);
         
         $sql = "SELECT *
                 FROM `$table_name`
@@ -169,6 +171,15 @@ class Phactory {
     public static function oneToOne($to_table, $from_column, $to_column = null) {
         return new Phactory_Association_OneToOne($to_table, $from_column, $to_column);
     }
-
+	/*
+	 * Create a list of inflection Exceptions Example: array("deer" => "deer")
+	 *
+	 * @param array($singular => $plural) singular form of the word and plural form of the word if it doesn't end in "s".
+	 *
+	 * @return object Phactory_Inflector
+	 */
+	public static function setInflection($singular_plural){
+		Phactory_Inflector::setSingularPlural($singular_plural);
+	}
 
 }
