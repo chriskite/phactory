@@ -94,11 +94,21 @@ class Phactory_Blueprint {
     public function recall() {
         $db_util = Phactory_DbUtilFactory::getDbUtil();
         $db_util->disableForeignKeys();
+
     	try {
             $sql = "DELETE FROM {$this->_table->getName()}";
-            $stmt = Phactory::getConnection()->prepare($sql);
-            return $stmt->execute();
+            Phactory::getConnection()->exec($sql);
         } catch(Exception $e) { }
+
+        foreach($this->_associations as $association) {
+            if($association instanceof Phactory_Association_ManyToMany) {
+                try {
+                    $sql = "DELETE FROM {$association->getJoinTable()}";
+                    Phactory::getConnection()->exec($sql);
+                } catch(Exception $e) { }
+            }
+        }
+
         $db_util->enableForeignKeys();
     }
 
