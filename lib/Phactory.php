@@ -134,12 +134,13 @@ class Phactory {
     }
 
     /*
-     * Delete created objects from the database,
-     * and clear all defined blueprints.
+     * Delete created objects from the database, clear defined
+     * blueprints, and clear stored inflection exceptions.
      */
     public static function reset() {
         self::recall();
         self::$_blueprints = array();
+        Phactory_Inflector::reset();
     }
 
     public static function manyToMany($to_table, $join_table, $from_column, $from_join_column, $to_join_column, $to_column = null) {
@@ -171,17 +172,18 @@ class Phactory {
     public static function oneToOne($to_table, $from_column, $to_column = null) {
         return new Phactory_Association_OneToOne($to_table, $from_column, $to_column);
     }
+
 	/*
-	 * Create a list of inflection Exceptions Example: array("singular" => "deer", "plural" => "deer")
-	 *
+	 * Specify an exception for table name inflection.
+     * For example, if your table of fish is called 'fishes',
+     * call setInflection('fish', 'fishes')
+     *
 	 * @param string $singular singular form of the word.
 	 * @param string $plural plural form of the word.
 	 *
-	 * @return object Phactory_Inflector
 	 */
 	public static function setInflection($singular, $plural){
-		$singular_plural = array("singular" => $singular, "plural" => $plural);
-		Phactory_Inflector::setSingularPlural($singular_plural);
+		Phactory_Inflector::addException($singular, $plural);
 	}
 
 }

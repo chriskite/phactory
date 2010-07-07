@@ -2,23 +2,44 @@
 
 class Phactory_Inflector extends Inflector {
 
-	private static $_singular_plural;
+	private static $_exceptions = array();
 
-    public function __construct() { }
+    /*
+     * Static class forbids instantiation.
+     */
+    private function __construct() { }
 	
-	public static function pluralize($word){
-		foreach(self::$_singular_plural as $sp)
-		{
-			if($sp['singular'] == $word){
-				return $sp['plural'];
-			}else{
-				return parent::pluralize($word);
+    /*
+     * Pluralize a word, obeying any stored exceptions.
+     *
+     * @param string $word the word to pluralize
+     */
+	public static function pluralize($word) {
+        foreach(self::$_exceptions as $exception) {
+			if($exception['singular'] == $word){
+				return $exception['plural'];
 			}
-		}
+        }
+
+        return parent::pluralize($word);
 	}
 
-	public static function setSingularPlural($singular_plural){
-		self::$_singular_plural[] = $singular_plural;
+    /*
+     * Add an exception to the rules for inflection.
+     *
+     * @param string $singular the singular form of this word
+     * @param string $plural the plurbal form of this word
+     */
+	public static function addException($singular, $plural) {
+		self::$_exceptions[] = array('singular' => $singular,
+                                     'plural'   => $plural);
 	}
+
+    /*
+     * Forget all stored exceptions.
+     */
+    public static function reset() {
+        self::$_exceptions = array();
+    }
 	
 }
