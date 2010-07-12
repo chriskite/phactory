@@ -42,7 +42,8 @@ class Phactory_Row {
         $r = $stmt->execute($params);
 		
 		if($r === false){
-			throw new Exception('The following INSERT statement failed: '.$sql);
+			$errorInfo = $stmt->errorInfo();
+			throw new Exception('The following INSERT statement failed: '.$sql.' ERROR MESSAGE: '.$errorInfo[2].' ERROR CODE: '.$errorInfo[1]);
 		}
 		
         $id = $pdo->lastInsertId();
