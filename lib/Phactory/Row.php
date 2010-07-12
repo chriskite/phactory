@@ -40,13 +40,17 @@ class Phactory_Row {
 
         $stmt = $pdo->prepare($sql);
         $r = $stmt->execute($params);
-
+		
+		if($r === false){
+			throw new Exception('The following INSERT statement failed: '.$sql);
+		}
+		
         $id = $pdo->lastInsertId();
 
         if($pk = $this->_table->getPrimaryKey()) { 
             $this->_storage[$pk] = $id;
         }
-
+		
         return $r;
     }
 
