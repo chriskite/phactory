@@ -1,6 +1,7 @@
 <?
 
 class Phactory_Association_ManyToOne {
+    protected $_from_table;
     protected $_to_table;
     protected $_from_column;
     protected $_to_column;
@@ -8,18 +9,25 @@ class Phactory_Association_ManyToOne {
     public function __construct($to_table, $from_column = null, $to_column = null) {
         $this->setToColumn($to_column);
         $this->setFromColumn($from_column);
-        $table = new Phactory_Table($to_table);
-        $this->setTable($table);
+        $this->setToTable($to_table);
     }
 
-    public function getTable() {
+    public function getFromTable() {
+        return $this->_from_table;
+    }
+
+    public function setFromTable($table) {
+        $this->_from_table = $table;
+        $this->_guessFromColumn();
+    }
+
+    public function getToTable() {
         return $this->_to_table;
     }
 
-    public function setTable($table) {
+    public function setToTable($table) {
         $this->_to_table = $table;
         $this->_guessToColumn();
-        $this->_guessFromColumn();
     }
 
     public function getFromColumn() {
@@ -41,8 +49,10 @@ class Phactory_Association_ManyToOne {
     protected function _guessFromColumn() {
         if(null === $this->_from_column) {
             $guess = $this->_to_table->getSingularName() . '_id';
-            if($this->_to_table->hasColumn($guess)) {
+            if($this->_from_table->hasColumn($guess)) {
                 $this->setFromColumn($guess);
+            } else {
+                throw new Exception("Unable to guess from_column for association and none specified");
             }
         }
     }

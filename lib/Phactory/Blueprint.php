@@ -3,14 +3,17 @@
 class Phactory_Blueprint {
     protected $_table;
     protected $_defaults;
-    protected $_associations;
+    protected $_associations = array();
     protected $_sequence;
 
     public function __construct($name, $defaults, $associations = array()) {
         $this->_table = new Phactory_Table($name); 
         $this->_defaults = $defaults;
-        $this->_associations = $associations;
         $this->_sequence = new Phactory_Sequence();
+
+        foreach($associations as $name => $association) {
+            $this->addAssociation($name, $association);
+        }
 
         if(!is_array($associations)) {
             throw new Exception("\$associations must be an array of Phactory_Association objects");
@@ -34,6 +37,7 @@ class Phactory_Blueprint {
     }
 
     public function addAssociation($name, $association) {
+        $association->setFromTable($this->_table);
         $this->_associations[$name] = $association;
     }
 

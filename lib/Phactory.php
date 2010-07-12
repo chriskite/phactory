@@ -144,6 +144,7 @@ class Phactory {
     }
 
     public static function manyToMany($to_table, $join_table, $from_column, $from_join_column, $to_join_column, $to_column = null) {
+        $to_table = new Phactory_Table($to_table);
         return new Phactory_Association_ManyToMany($to_table, $join_table, $from_column, $from_join_column, $to_join_column, $to_column);
     }
 
@@ -157,6 +158,7 @@ class Phactory {
      * @return object Phactory_Association_ManyToOne
      */
     public static function manyToOne($to_table, $from_column, $to_column = null) {
+        $to_table = new Phactory_Table($to_table);
         return new Phactory_Association_ManyToOne($to_table, $from_column, $to_column);
     }
 
@@ -170,6 +172,7 @@ class Phactory {
      * @return object Phactory_Association_OneToOne
      */
     public static function oneToOne($to_table, $from_column, $to_column = null) {
+        $to_table = new Phactory_Table($to_table);
         return new Phactory_Association_OneToOne($to_table, $from_column, $to_column);
     }
 
