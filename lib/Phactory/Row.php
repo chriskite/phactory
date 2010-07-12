@@ -40,16 +40,34 @@ class Phactory_Row {
 
         $stmt = $pdo->prepare($sql);
         $r = $stmt->execute($params);
-		
+				
 		if($r === false){
 			$errorInfo = $stmt->errorInfo();
 			throw new Exception('The following INSERT statement failed: '.$sql.' ERROR MESSAGE: '.$errorInfo[2].' ERROR CODE: '.$errorInfo[1]);
 		}
 		
+		// only works if table's primary key autoincrements
         $id = $pdo->lastInsertId();
-
-        if($pk = $this->_table->getPrimaryKey()) { 
-            $this->_storage[$pk] = $id;
+				
+        if($pk = $this->_table->getPrimaryKey()) {
+			if($id){
+				$this->_storage[$pk] = $id;
+			}else{
+				// if key doesn't autoincrement, find last inserted row and set the primary key.
+				$sql = "SELECT * FROM {$this->_table} WHERE";
+				
+				for($i = 0, $size = sizeof($keys); $i < $size; ++$i){
+					$sql .= " {$keys[$i]} = {$values[$i]} AND";
+				}
+				
+				$sql = substr($sql, 0, -4);
+				
+				$stmt = $pdo->prepare($sql);
+				$stmt->execute($params);
+				$result = $stmt->fetch(PDO::FETCH_ASSOC);
+				
+				$this->_storage[$pk] = $result[$pk];
+			}
         }
 		
         return $r;
