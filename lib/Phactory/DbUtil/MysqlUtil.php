@@ -12,6 +12,15 @@ class Phactory_DbUtil_MysqlUtil {
 		return $result['Column_name'];
 	}
 
+    public function getColumns($table) {
+        $stmt = $this->_pdo->query("DESCRIBE `$table`");
+        $columns = array();
+        while($row = $stmt->fetch()) {
+            $columns[] = $row['field'];
+        }
+        return $columns;
+    }
+
     public function disableForeignKeys() {
         $this->_pdo->exec("SET FOREIGN_KEY_CHECKS=0");
     }

@@ -1,6 +1,7 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 
+require_once PHACTORY_PATH . '/Inflector.php';
 require_once PHACTORY_PATH . '/Phactory/Inflector.php';
 
 /**

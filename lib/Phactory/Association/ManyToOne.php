@@ -5,10 +5,11 @@ class Phactory_Association_ManyToOne {
     protected $_from_column;
     protected $_to_column;
 
-    public function __construct($to_table, $from_column, $to_column = null) {
+    public function __construct($to_table, $from_column = null, $to_column = null) {
         $this->setToColumn($to_column);
         $this->setFromColumn($from_column);
-        $this->setTable($to_table);
+        $table = new Phactory_Table($to_table);
+        $this->setTable($table);
     }
 
     public function getTable() {
@@ -18,6 +19,7 @@ class Phactory_Association_ManyToOne {
     public function setTable($table) {
         $this->_to_table = $table;
         $this->_guessToColumn();
+        $this->_guessFromColumn();
     }
 
     public function getFromColumn() {
@@ -36,10 +38,18 @@ class Phactory_Association_ManyToOne {
         $this->_to_column = $column;
     }
 
+    protected function _guessFromColumn() {
+        if(null === $this->_from_column) {
+            $guess = $this->_to_table->getSingularName() . '_id';
+            if($this->_to_table->hasColumn($guess)) {
+                $this->setFromColumn($guess);
+            }
+        }
+    }
+
     protected function _guessToColumn() {
         if(null === $this->_to_column) {
-            $db_util = Phactory_DbUtilFactory::getDbUtil();
-            $this->_to_column = $db_util->getPrimaryKey($this->_to_table);
+            $this->_to_column = $this->_to_table->getPrimaryKey();
             if(!$this->_to_column) {
                 throw new Exception("Unable to determine primary key for table '{$this->_to_table}' and none specified");
             }

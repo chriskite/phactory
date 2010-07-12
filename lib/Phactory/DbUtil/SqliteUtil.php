@@ -25,6 +25,15 @@ class Phactory_DbUtil_SqliteUtil{
 		return $matches[1]; 
 	}
 
+    public function getColumns($table) {
+        $stmt = $this->_pdo->query("PRAGMA table_info($table)");
+        $columns = array();
+        while($row = $stmt->fetch()) {
+            $columns[] = $row['name'];
+        }
+        return $columns;
+    }
+
     public function disableForeignKeys() {
     }
 

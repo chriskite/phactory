@@ -41,5 +41,15 @@ class Phactory_DbUtil_SqliteUtilTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('id', $pk);
     }
 
+    public function testGetColumns() {
+        $this->pdo->exec("CREATE TABLE test_table ( id INTEGER PRIMARY KEY, name TEXT, email TEXT, age INTEGER )");
+
+        $db_util = new Phactory_DbUtil_SqliteUtil();
+
+        $columns = $db_util->getColumns('test_table');
+
+        $this->assertEquals(array('id', 'name', 'email', 'age'), $columns);
+    }
+
 }
 ?>
