@@ -145,6 +145,7 @@ class Phactory {
 
     public static function manyToMany($to_table, $join_table, $from_column, $from_join_column, $to_join_column, $to_column = null) {
         $to_table = new Phactory_Table($to_table);
+        $join_table = new Phactory_Table($join_table);
         return new Phactory_Association_ManyToMany($to_table, $join_table, $from_column, $from_join_column, $to_join_column, $to_column);
     }
 
