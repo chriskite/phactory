@@ -132,13 +132,18 @@ class Phactory_Blueprint {
             $join_table = $assoc->getJoinTable();
             $from_join_column = $assoc->getFromJoinColumn();
             $to_join_column = $assoc->getToJoinColumn();
-
+			
             $sql = "INSERT INTO `$join_table` 
                     (`$from_join_column`, `$to_join_column`)
                     VALUES
                     (:from_id, :to_id)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute(array(':from_id' => $row->getId(), ':to_id' => $to_row->getId()));
+            $r = $stmt->execute(array(':from_id' => $row->getId(), ':to_id' => $to_row->getId()));
+			
+			if($r === false){
+				$errorInfo = $stmt->errorInfo();
+				throw new Exception('The following INSERT statement failed: '.$sql.' ERROR MESSAGE: '.$errorInfo[2].' ERROR CODE: '.$errorInfo[1]);
+			}
         }
-    } 
+    }
 }
