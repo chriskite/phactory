@@ -42,8 +42,8 @@ class Phactory_Row {
         $r = $stmt->execute($params);
 				
 		if($r === false){
-			$errorInfo = $stmt->errorInfo();
-			throw new Exception('The following INSERT statement failed: '.$sql.' ERROR MESSAGE: '.$errorInfo[2].' ERROR CODE: '.$errorInfo[1]);
+			$error= $stmt->errorInfo();
+			Phactory_Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
 		}
 		
 		// only works if table's primary key autoincrements

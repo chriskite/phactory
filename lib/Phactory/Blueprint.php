@@ -141,8 +141,8 @@ class Phactory_Blueprint {
             $r = $stmt->execute(array(':from_id' => $row->getId(), ':to_id' => $to_row->getId()));
 			
 			if($r === false){
-				$errorInfo = $stmt->errorInfo();
-				throw new Exception('The following INSERT statement failed: '.$sql.' ERROR MESSAGE: '.$errorInfo[2].' ERROR CODE: '.$errorInfo[1]);
+				$error= $stmt->errorInfo();
+				Phactory_Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
 			}
         }
     }
