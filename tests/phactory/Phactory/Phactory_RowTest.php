@@ -59,5 +59,18 @@ class Phactory_RowTest extends PHPUnit_Framework_TestCase
 		// test retrieved db row
         $this->assertEquals($db_user['name'], $name);
     }
+
+    public function testToArray()
+    {
+        $name = 'testname';
+        $row = new Phactory_Row('user', array('name' => $name));
+        $arr = $row->toArray();
+
+        $this->assertEquals($name, $arr['name']);
+
+        //changing the returned array shouldn't change the row
+        $arr['name'] = $name + 'foo';
+        $this->assertNotEquals($row->name, $arr['name']);
+    }
 }
 ?>

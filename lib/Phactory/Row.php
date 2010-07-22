@@ -73,15 +73,9 @@ class Phactory_Row {
         return $r;
     }
 
-	function toArray() {
-       foreach($this->_storage as $key => $value) {
-		   if(is_string($key)){ 
-              $storageArray[$key] = $value;
-		   }
-		   ksort($storageArray);
-       }
-	   return $storageArray;
-   }
+	public function toArray() {
+        return $copy = $this->_storage;
+    }
 	
     public function __get($key) {
         return $this->_storage[$key];
