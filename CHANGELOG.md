@@ -1,3 +1,20 @@
+## 0.0.4 / 2010-07-22
+
+* Major Improvements
+
+    * Inflection of table names from singular to plural is handled automatically,
+      so only the singular name needs to be specified.
+    * ManyToMany associations are able to guess all the necessary column names.
+
+* Minor Improvements
+
+    * Improved SQL error detection and reporting.
+    * Added Phactory_Row#toArray()
+
+* Bug Fixes
+
+    * Join tables used by associations are cleared during recall().
+
 ## 0.0.3 / 2010-07-01
 
 * Bug Fixes
