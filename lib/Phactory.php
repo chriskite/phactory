@@ -104,19 +104,19 @@ class Phactory {
      * @param array $byColumn
      * @return object Phactory_Row
      */
-    public static function get($table_name, $byColumn) {
-        $column = array_keys($byColumn);
-        $column = $column[0];
-        $value = $byColumn[$column];
+    public static function get($table_name, $byColumns) {		
         $table_name = Phactory_Inflector::pluralize($table_name);
-        
-        $sql = "SELECT *
-                FROM `$table_name`	
-                WHERE `$column` = :value";
-        $stmt = self::$_pdo->prepare($sql);
-        $stmt->execute(array(':value' => $value));
+				
+		foreach($byColumns as $field => $value)
+		{
+			$sql[] = $field.'=?';
+			$paramArray[] = $value;
+		}
+								
+        $stmt = self::$_pdo->prepare("SELECT * FROM `$table_name` WHERE ".join(' AND ', $sql));
+        $stmt->execute($paramArray);
         $result = $stmt->fetch();
-        
+        		
         if(false === $result) {
             return null;
         }
