@@ -105,6 +105,10 @@ class Phactory {
      * @return object Phactory_Row
      */
     public static function get($table_name, $byColumns) {		
+        if(!is_array($byColumns)) {
+            throw new Exception("\$byColumns must be an associative array of 'column => value' pairs");
+        }
+
         $table = new Phactory_Table($table_name);
 				
         $equals = array();
