@@ -105,23 +105,26 @@ class Phactory {
      * @return object Phactory_Row
      */
     public static function get($table_name, $byColumns) {		
-        $table_name = Phactory_Inflector::pluralize($table_name);
+        $table = new Phactory_Table($table_name);
 				
+        $equals = array();
+        $params = array();
 		foreach($byColumns as $field => $value)
 		{
-			$sql[] = $field.'=?';
-			$paramArray[] = $value;
+			$equals[] = $field . ' = ?';
+			$params[] = $value;
 		}
 								
-        $stmt = self::$_pdo->prepare("SELECT * FROM `$table_name` WHERE ".join(' AND ', $sql));
-        $stmt->execute($paramArray);
+        $where_sql = implode(' AND ', $equals);
+
+        $stmt = self::$_pdo->prepare("SELECT * FROM `" . $table->getName() . "` WHERE " . $where_sql);
+        $stmt->execute($params);
         $result = $stmt->fetch();
         		
         if(false === $result) {
             return null;
         }
 
-        $table = new Phactory_Table($table_name);
         return new Phactory_Row($table, $result);
     }
 
