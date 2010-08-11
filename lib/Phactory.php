@@ -166,7 +166,7 @@ class Phactory {
      *
      * @return object Phactory_Association_ManyToOne
      */
-    public static function manyToOne($to_table, $from_column, $to_column = null) {
+    public static function manyToOne($to_table, $from_column = null, $to_column = null) {
         $to_table = new Phactory_Table($to_table);
         return new Phactory_Association_ManyToOne($to_table, $from_column, $to_column);
     }

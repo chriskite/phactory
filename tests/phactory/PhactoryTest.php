@@ -128,7 +128,22 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
                          array('name' => 'admin'));
         Phactory::define('user',
                          array('name' => 'testuser'),
-                         array('role' => Phactory::manyToOne('roles', 'role_id')));
+                         array('role' => Phactory::manyToOne('role', 'role_id')));
+
+        $role = Phactory::create('role'); 
+        $user = Phactory::createWithAssociations('user', array('role' => $role));
+
+        $this->assertNotNull($role->id);
+        $this->assertEquals($role->id, $user->role_id);
+    }
+
+    public function testCreateWithAssociationsGuessingFromColumn()
+    {
+        Phactory::define('role',
+                         array('name' => 'admin'));
+        Phactory::define('user',
+                         array('name' => 'testuser'),
+                         array('role' => Phactory::manyToOne('role')));
 
         $role = Phactory::create('role'); 
         $user = Phactory::createWithAssociations('user', array('role' => $role));
