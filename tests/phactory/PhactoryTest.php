@@ -128,7 +128,22 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
                          array('name' => 'admin'));
         Phactory::define('user',
                          array('name' => 'testuser'),
-                         array('role' => Phactory::manyToOne('roles', 'role_id')));
+                         array('role' => Phactory::manyToOne('role', 'role_id')));
+
+        $role = Phactory::create('role'); 
+        $user = Phactory::createWithAssociations('user', array('role' => $role));
+
+        $this->assertNotNull($role->id);
+        $this->assertEquals($role->id, $user->role_id);
+    }
+
+    public function testCreateWithAssociationsGuessingFromColumn()
+    {
+        Phactory::define('role',
+                         array('name' => 'admin'));
+        Phactory::define('user',
+                         array('name' => 'testuser'),
+                         array('role' => Phactory::manyToOne('role')));
 
         $role = Phactory::create('role'); 
         $user = Phactory::createWithAssociations('user', array('role' => $role));
@@ -186,7 +201,28 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $db_user = Phactory::get('user', array('name' => $name)); 
 
         // test retrieved db row
-        $this->assertEquals($db_user->name, $name);
+        $this->assertEquals($name, $db_user->name);
+        $this->assertType('Phactory_Row', $db_user);
+    }
+
+    public function testGetMultiAttributes()
+    {
+        $name = 'testuser';
+        $role_id = 2;
+
+        // define and create user in db
+        Phactory::define('user', array('name' => $name, 'role_id' => $role_id));
+        $user = Phactory::create('user');
+
+        // create 2nd user which shouldn't be returned
+        Phactory::create('user', array('name' => 'user2', 'role_id' => $role_id));
+
+        // get() expected row from database
+        $db_user = Phactory::get('user', array('name' => $name, 'role_id' => $role_id)); 
+
+        // test retrieved db row
+        $this->assertEquals($name, $db_user->name);
+        $this->assertEquals($role_id, $db_user->role_id);
         $this->assertType('Phactory_Row', $db_user);
     }
 

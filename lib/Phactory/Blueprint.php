@@ -12,6 +12,7 @@ class Phactory_Blueprint {
         $this->_sequence = new Phactory_Sequence();
 
         foreach($associations as $name => $association) {
+            $association->setFromTable($this->_table);
             $this->addAssociation($name, $association);
         }
 

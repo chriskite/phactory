@@ -104,24 +104,31 @@ class Phactory {
      * @param array $byColumn
      * @return object Phactory_Row
      */
-    public static function get($table_name, $byColumn) {
-        $column = array_keys($byColumn);
-        $column = $column[0];
-        $value = $byColumn[$column];
-        $table_name = Phactory_Inflector::pluralize($table_name);
-        
-        $sql = "SELECT *
-                FROM `$table_name`	
-                WHERE `$column` = :value";
-        $stmt = self::$_pdo->prepare($sql);
-        $stmt->execute(array(':value' => $value));
+    public static function get($table_name, $byColumns) {		
+        if(!is_array($byColumns)) {
+            throw new Exception("\$byColumns must be an associative array of 'column => value' pairs");
+        }
+
+        $table = new Phactory_Table($table_name);
+				
+        $equals = array();
+        $params = array();
+		foreach($byColumns as $field => $value)
+		{
+			$equals[] = $field . ' = ?';
+			$params[] = $value;
+		}
+								
+        $where_sql = implode(' AND ', $equals);
+
+        $stmt = self::$_pdo->prepare("SELECT * FROM `" . $table->getName() . "` WHERE " . $where_sql);
+        $stmt->execute($params);
         $result = $stmt->fetch();
-        
+        		
         if(false === $result) {
             return null;
         }
 
-        $table = new Phactory_Table($table_name);
         return new Phactory_Row($table, $result);
     }
 
@@ -159,7 +166,7 @@ class Phactory {
      *
      * @return object Phactory_Association_ManyToOne
      */
-    public static function manyToOne($to_table, $from_column, $to_column = null) {
+    public static function manyToOne($to_table, $from_column = null, $to_column = null) {
         $to_table = new Phactory_Table($to_table);
         return new Phactory_Association_ManyToOne($to_table, $from_column, $to_column);
     }
