@@ -1,3 +1,10 @@
+## 0.1.0 / 2010-08-11
+
+* Minor Improvements
+
+    * Add ability to specify multiple byColumns in Phactory::get()
+    * Fix from_column guessing on Phactory::manyToOne()
+
 ## 0.0.4 / 2010-07-22
 
 * Major Improvements
