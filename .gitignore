@@ -1,3 +1,4 @@
+phpunit.xml
 *.swp
 *.db
 *.db-journal
