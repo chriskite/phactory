@@ -16,7 +16,7 @@ class Phactory_DbUtil_MysqlUtil {
         $stmt = $this->_pdo->query("DESCRIBE `$table`");
         $columns = array();
         while($row = $stmt->fetch()) {
-            $columns[] = $row['field'];
+            $columns[] = $row['Field'];
         }
         return $columns;
     }
