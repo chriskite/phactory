@@ -115,7 +115,7 @@ class Phactory {
         $params = array();
 		foreach($byColumns as $field => $value)
 		{
-			$equals[] = $field . ' = ?';
+			$equals[] = '`' . $field .'` = ?';
 			$params[] = $value;
 		}
 								
