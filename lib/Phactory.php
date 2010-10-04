@@ -121,9 +121,16 @@ class Phactory {
 		}
 								
         $where_sql = implode(' AND ', $equals);
+	$sql = "SELECT * FROM `" . $table->getName() . "` WHERE " . $where_sql;
 
-        $stmt = self::$_pdo->prepare("SELECT * FROM `" . $table->getName() . "` WHERE " . $where_sql);
-        $stmt->execute($params);
+        $stmt = self::$_pdo->prepare($sql);
+        $r = $stmt->execute($params);
+
+	if($r === false){
+		$error = $stmt->errorInfo();
+		Phactory_Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
+	}
+
         $result = $stmt->fetch();
         		
         if(false === $result) {
