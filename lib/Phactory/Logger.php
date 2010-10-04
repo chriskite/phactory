@@ -1,4 +1,5 @@
-<?
+<?php
+
 class Phactory_Logger {
 
     const LEVEL_DEBUG = 1;

@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Phactory_Association {
     protected $_to_table;

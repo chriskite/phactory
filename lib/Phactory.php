@@ -1,4 +1,5 @@
-<?
+<?php
+
 require_once('Phactory/Logger.php');
 require_once('Phactory/Sequence.php');
 require_once('Phactory/Table.php');

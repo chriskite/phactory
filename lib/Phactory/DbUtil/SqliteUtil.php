@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Phactory_DbUtil_SqliteUtil{
 

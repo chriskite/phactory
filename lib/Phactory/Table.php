@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Phactory_Table {
     protected $_singular;

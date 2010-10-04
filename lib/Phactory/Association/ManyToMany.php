@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Phactory_Association_ManyToMany extends Phactory_Association_ManyToOne {
     protected $_join_table;

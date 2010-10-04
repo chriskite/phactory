@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Phactory_Blueprint {
     protected $_table;
