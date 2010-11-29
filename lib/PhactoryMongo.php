@@ -130,6 +130,24 @@ class Phactory {
     }
 
     /*
+     * Create an embeds-one association object for use in define().
+     *
+     * @param string $collection_name the singular name of the collection to associate with
+     */
+    public static function embedsOne($collection_name) {
+        return new Phactory_Association_EmbedsOne($collection_name);
+    }
+
+    /*
+     * Create an embeds-many association object for use in define().
+     *
+     * @param string $collection_name the singular name of the collection to associate with
+     */
+    public static function embedsMany($collection_name) {
+        return new Phactory_Association_EmbedsMany($collection_name);
+    }
+
+    /*
      * Delete created documents from the database.
      */
     public static function recall() {
