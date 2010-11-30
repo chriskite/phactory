@@ -1,3 +1,10 @@
+## 0.2.0 / 2010-12-01
+
+* Minor Improvements
+
+    * Add ability to associate an array of Phactory_Rows when creating with a many-to-many association
+    * New Phactory::build() method creates a row without saving it to the databaes
+
 ## 0.1.0 / 2010-08-11
 
 * Minor Improvements
