@@ -103,7 +103,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
 
         // test returned Phactory_Row
         $this->assertType('Phactory_Row', $user);
-        $this->assertEquals($user->name, $override_name);
+        $this->assertEquals($override_name, $user->name);
     }
 
     public function testBuildWithAssociations()
@@ -213,6 +213,34 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->assertNotEquals(false, $row);
         $this->assertEquals($blog->getId(), $row['blog_id']);
         $this->assertEquals($tag->getId(), $row['tag_id']);
+
+        $this->pdo->exec("DROP TABLE blogs");
+        $this->pdo->exec("DROP TABLE tags");
+        $this->pdo->exec("DROP TABLE blogs_tags");
+    }
+
+    public function testCreateWithManyToManyAssociations() {
+        $this->pdo->exec("CREATE TABLE blogs ( id INTEGER PRIMARY KEY, title TEXT )");
+        $this->pdo->exec("CREATE TABLE tags ( id INTEGER PRIMARY KEY, name TEXT )");
+        $this->pdo->exec("CREATE TABLE blogs_tags ( blog_id INTEGER, tag_id INTEGER )");
+
+        Phactory::define('tag',
+                         array('name' => 'Test Tag'));
+        Phactory::define('blog',
+                         array('title' => 'Test Title'),
+                         array('tags' => Phactory::manyToMany('tags', 'blogs_tags', 'id', 'blog_id', 'tag_id', 'id')));
+
+        $tags = array(Phactory::create('tag'), Phactory::create('tag'));
+        $blog = Phactory::createWithAssociations('blog', array('tags' => $tags));
+
+        $result = $this->pdo->query("SELECT * FROM blogs_tags");
+        foreach($tags as $tag) {
+            $row = $result->fetch();
+            $this->assertNotEquals(false, $row);
+            $this->assertEquals($blog->getId(), $row['blog_id']);
+            $this->assertEquals($tag->getId(), $row['tag_id']);
+        }
+        $result->closeCursor();
 
         $this->pdo->exec("DROP TABLE blogs");
         $this->pdo->exec("DROP TABLE tags");
