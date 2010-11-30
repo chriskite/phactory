@@ -41,11 +41,14 @@ class Phactory_Blueprint {
     }
 
     /*
-     * Create document in the database and return it.
+     * Build the document as an array, but don't save it to the db.
      *
-     * @return array the created document
+     * @param array $overrides field => value pairs which override the defaults for this blueprint
+     * @param array $associated [name] => [Phactory_Association] pairs
+     * @return array the document
      */
-    public function create($overrides = array(), $associated = array()) {
+    public function build($overrides = array(), $associated = array()) {
+        $data = $this->_defaults;
         if($associated) {
             foreach($associated as $name => $document) {
                 if(!isset($this->_associations[$name])) {
@@ -54,14 +57,8 @@ class Phactory_Blueprint {
 
                 $association = $this->_associations[$name];
 
-                if($association instanceof Phactory_Association_EmbedsMany) {
-                    // $document can be a single doc or an array of docs
-                    if(!is_array($document)) {
-                        $document = array($document);
-                    }
-                } elseif($association instanceof Phactory_Association_EmbedsOne) {
-                    // nothing special needed
-                } else {
+                if(!$association instanceof Phactory_Association_EmbedsMany &&
+                   !$association instanceof Phactory_Association_EmbedsOne) {
                     throw new Exception("Invalid association object for '$name'");
                 }
 
@@ -73,11 +70,24 @@ class Phactory_Blueprint {
 
         if($overrides) {
             foreach($overrides as $field => $value) {
-                $data->$field = $value;
+                $data[$field] = $value;
             }
         }
 
-        return $this->_collection->insert($data);
+        return $data;
+    }
+
+    /*
+     * Create document in the database and return it.
+     *
+     * @param array $overrides field => value pairs which override the defaults for this blueprint
+     * @param array $associated [name] => [Phactory_Association] pairs
+     * @return array the created document
+     */
+    public function create($overrides = array(), $associated = array()) {
+        $data = $this->build($overrides, $associated);
+        $this->_collection->insert($data);
+        return $data;
     }
 
     /*

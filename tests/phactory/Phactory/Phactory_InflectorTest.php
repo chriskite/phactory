@@ -1,12 +1,15 @@
 <?php
-require_once PHACTORY_PATH . '/Inflector.php';
-require_once PHACTORY_PATH . '/Phactory/Inflector.php';
 
 /**
  * Test class for Phactory_Inflector.
  */
 class Phactory_InflectorTest extends PHPUnit_Framework_TestCase
 {
+    public function setUp() {
+        require_once PHACTORY_PATH . '/Inflector.php';
+        require_once PHACTORY_PATH . '/Phactory/Inflector.php';
+    }
+
     public function tearDown() {
         Phactory_Inflector::reset();
     }

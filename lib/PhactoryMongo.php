@@ -2,13 +2,11 @@
 
 require_once('PhactoryMongo/Logger.php');
 require_once('PhactoryMongo/Sequence.php');
-require_once('PhactoryMongo/Table.php');
+require_once('PhactoryMongo/Collection.php');
 require_once('PhactoryMongo/Blueprint.php');
-require_once('PhactoryMongo/Row.php');
-require_once('PhactoryMongo/DbUtilFactory.php');
-require_once('PhactoryMongo/Association/ManyToOne.php');
-require_once('PhactoryMongo/Association/OneToOne.php');
-require_once('PhactoryMongo/Association/ManyToMany.php');
+require_once('PhactoryMongo/Association.php');
+require_once('PhactoryMongo/Association/EmbedsOne.php');
+require_once('PhactoryMongo/Association/EmbedsMany.php');
 require_once('Inflector.php');
 require_once('PhactoryMongo/Inflector.php');
 
@@ -69,12 +67,25 @@ class Phactory {
      * overriding some or all of the default values.
      * The document is saved to the database and returned as an array.
      *
-     * @param string $collection name of the collection
+     * @param string $blueprint_name name of the blueprint
      * @param array $overrides key => value pairs of column => value
      * @return array
      */
-    public static function create($collection, $overrides = array()) {
-        return self::createWithAssociations($collection, array(), $overrides);
+    public static function create($blueprint_name, $overrides = array()) {
+        return self::createWithAssociations($blueprint_name, array(), $overrides);
+    }
+
+    /*
+     * Build a document as an array, optionally
+     * overriding some or all of the default values.
+     * The document is not saved to the database.
+     *
+     * @param string $blueprint_name name of the blueprint
+     * @param array $overrides key => value pairs of column => value
+     * @return array
+     */
+    public static function build($blueprint_name, $overrides = array()) {
+        return self::buildWithAssociations($blueprint_name, array(), $overrides);
     }
 
     /*
@@ -93,6 +104,24 @@ class Phactory {
         }
             
         return $blueprint->create($overrides, $associations);
+    }
+
+    /*
+     * Build a document as an array, optionally
+     * overriding some or all of the default values.
+     * The document is not saved to the database.
+     *
+     * @param string $blueprint_name name of the blueprint to use 
+     * @param array $associations [collection name] => [array]
+     * @param array $overrides key => value pairs of field => value
+     * @return array
+     */
+    public static function buildWithAssociations($blueprint_name, $associations = array(), $overrides = array()) {
+        if(! ($blueprint = self::$_blueprints[$blueprint_name]) ) {
+            throw new Exception("No blueprint defined for '$blueprint_name'");
+        }
+            
+        return $blueprint->build($overrides, $associations);
     }
 
     /*

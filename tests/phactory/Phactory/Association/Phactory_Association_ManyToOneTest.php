@@ -1,5 +1,4 @@
 <?php
-require_once PHACTORY_PATH . '/Phactory.php'; 
 
 /**
  * Test class for Phactory_Association_ManyToOne.
@@ -9,6 +8,7 @@ class Phactory_Association_ManyToOneTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
+        require_once PHACTORY_PATH . '/Phactory.php'; 
         $this->pdo = new PDO("sqlite:test.db");
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         Phactory::setConnection($this->pdo);

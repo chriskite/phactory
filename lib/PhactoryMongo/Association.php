@@ -1,13 +1,13 @@
 <?
 
 class Phactory_Association {
-    protected $_collection;
+    protected $_name;
 
-    public function __construct($collection_name) {
-        $this->_collection = new Phactory_Collection($collection_name);
+    public function __construct($name) {
+        $this->_name = $name;
     }
 
-    public function getCollection() {
-        return $this->_collection;
+    public function getName() {
+        return $this->_name;
     }
 }

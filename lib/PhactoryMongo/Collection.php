@@ -1,6 +1,6 @@
 <?php
 
-class Phactory_Collection extends MongoCollection {
+class Phactory_Collection {
     protected $_singular;
     protected $_name;
     protected $_collection;
@@ -13,7 +13,7 @@ class Phactory_Collection extends MongoCollection {
             $this->_name = $singular_name;
         }
 
-        $this->_collection  = Phactory::getDb()->selectCollection($this->_name);
+        $this->_collection = Phactory::getDb()->selectCollection($this->_name);
     }
 
     public function getName() {
@@ -29,6 +29,6 @@ class Phactory_Collection extends MongoCollection {
     }
 
     public function __call($func, $args) {
-        $this->_collection->$func($args);
+        return call_user_func_array(array($this->_collection, $func), $args);
     }
 }
