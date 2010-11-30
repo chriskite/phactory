@@ -1,5 +1,4 @@
 <?php
-require_once PHACTORY_PATH . '/Phactory.php';
 
 /**
  * Test class for Phactory.
@@ -9,12 +8,9 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
 {
     protected $pdo;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
     protected function setUp()
     {
+        require_once PHACTORY_PATH . '/Phactory.php';
         $this->pdo = new PDO("sqlite:test.db");
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 

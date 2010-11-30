@@ -1,5 +1,4 @@
 <?php
-require_once PHACTORY_PATH . '/Phactory/DbUtil/SqliteUtil.php';
 
 /**
  * Test class for Phactory_DbUtil_SqliteUtil.
@@ -9,12 +8,10 @@ class Phactory_DbUtil_SqliteUtilTest extends PHPUnit_Framework_TestCase
 {
     protected $pdo;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
     protected function setUp()
     {
+        require_once PHACTORY_PATH . '/Phactory.php';
+        require_once PHACTORY_PATH . '/Phactory/DbUtil/SqliteUtil.php';
         $this->pdo = new PDO('sqlite:test.db');
         Phactory::setConnection($this->pdo);
     }
