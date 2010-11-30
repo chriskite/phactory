@@ -1,5 +1,9 @@
 ## 0.2.0 / 2010-12-01
 
+* Major Improvements
+
+    * Add support for MongoDB, including associations via embedding
+
 * Minor Improvements
 
     * Add ability to associate an array of Phactory_Rows when creating with a many-to-many association
