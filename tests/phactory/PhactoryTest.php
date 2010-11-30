@@ -79,6 +79,48 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
                          array('role' => Phactory::manyToOne('roles', 'role_id')));
     }
 
+    public function testBuild()
+    {
+        $name = 'testuser';
+
+        // define and build user
+        Phactory::define('user', array('name' => $name));
+        $user = Phactory::build('user');
+
+        // test returned Phactory_Row
+        $this->assertType('Phactory_Row', $user);
+        $this->assertEquals($user->name, $name);
+    }
+
+    public function testBuildWithOverrides()
+    {
+        $name = 'testuser';
+        $override_name = 'override_user';
+
+        // define and build user
+        Phactory::define('user', array('name' => $name));
+        $user = Phactory::build('user', array('name' => $override_name));
+
+        // test returned Phactory_Row
+        $this->assertType('Phactory_Row', $user);
+        $this->assertEquals($user->name, $override_name);
+    }
+
+    public function testBuildWithAssociations()
+    {
+        Phactory::define('role',
+                         array('name' => 'admin'));
+        Phactory::define('user',
+                         array('name' => 'testuser'),
+                         array('role' => Phactory::manyToOne('role', 'role_id')));
+
+        $role = Phactory::create('role'); 
+        $user = Phactory::buildWithAssociations('user', array('role' => $role));
+
+        $this->assertNotNull($role->id);
+        $this->assertEquals($role->id, $user->role_id);
+    }
+
     public function testCreate()
     {
         $name = 'testuser';

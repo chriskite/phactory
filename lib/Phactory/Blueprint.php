@@ -47,28 +47,27 @@ class Phactory_Blueprint {
     }
 
     /*
-     * Reify a Blueprint as a Phactory_Row. Optionally use an array
+     * Build a Phactory_Row from this Blueprint. Optionally use an array
      * of associated objects to set fk columns.
+     *
+     * Note that this function ignores ManyToMany associations, as those
+     * can't be handled unless the Row is actually saved to the db.
      *
      * @param array $associated  [table name] => [Phactory_Row]
      */
-    public function create($overrides = array(), $associated = array()) {
+    public function build($overrides = array(), $associated = array()) {
+        // process one-to-one and many-to-one relations
         $assoc_keys = array();
-        $many_to_many = array();
-        if($associated) {
-            foreach($associated as $name => $row) {
-                if(!isset($this->_associations[$name])) {
-                    throw new Exception("No association '$name' defined");
-                }
+        foreach($associated as $name => $assoc) {
+            if(!isset($this->_associations[$name])) {
+                throw new Exception("No association '$name' defined");
+            }
 
-                $association = $this->_associations[$name];
-
-                if($association instanceof Phactory_Association_ManyToMany) {
-                    $many_to_many[$name] = array($row, $association);
-                } else {
-                    $fk_column = $association->getFromColumn();
-                    $assoc_keys[$fk_column] = $row->getId();
-                }
+            $association = $this->_associations[$name];
+            if($association instanceof Phactory_Association_ManyToOne ||
+               $association instanceof Phactory_Association_OneToOne) {
+                $fk_column = $association->getFromColumn();
+                $assoc_keys[$fk_column] = $assoc->getId();
             }
         }
     
@@ -83,7 +82,28 @@ class Phactory_Blueprint {
                 $row->$field = $value;
             }
         }
-     
+
+        return $row;
+    }
+
+    /*
+     * Reify a Blueprint as a Phactory_Row. Optionally use an array
+     * of associated objects to set fk columns.
+     *
+     * @param array $associated  [table name] => [Phactory_Row]
+     */
+    public function create($overrides = array(), $associated = array()) {
+        $row = $this->build($overrides, $associated); 
+
+        // process any many-to-many associations
+        $many_to_many = array();
+        foreach($associated as $name => $assoc) {
+            $association = $this->_associations[$name];
+            if($association instanceof Phactory_Association_ManyToMany) {
+                $many_to_many[$name] = array($assoc, $association);
+            }
+        }
+
         $row->save();
         
         if($many_to_many) {

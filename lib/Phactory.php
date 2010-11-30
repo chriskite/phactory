@@ -79,6 +79,19 @@ class Phactory {
     }
 
     /*
+     * Build a Phactory_Row object, optionally
+     * overriding some or all of the default values.
+     * The row is not saved to the database.
+     *
+     * @param string $table name of the table
+     * @param array $overrides key => value pairs of column => value
+     * @return object Phactory_Row
+     */
+    public static function build($table, $overrides = array()) {
+        return self::buildWithAssociations($table, array(), $overrides);
+    }
+
+    /*
      * Instantiate a row in the specified table, optionally
      * overriding some or all of the default values.
      * The row is saved to the database, and returned
@@ -95,6 +108,30 @@ class Phactory {
         }
             
         return $blueprint->create($overrides, $associations);
+    }
+
+    /*
+     * Build a Phactory_Row object, optionally
+     * overriding some or all of the default values.
+     * The row is not saved to the database.
+     *
+     * @param string $blueprint_name name of the blueprint to use 
+     * @param array $associations [table name] => [Phactory_Row]
+     * @param array $overrides key => value pairs of column => value
+     * @return object Phactory_Row
+     */
+    public static function buildWithAssociations($blueprint_name, $associations = array(), $overrides = array()) {
+        if(! ($blueprint = self::$_blueprints[$blueprint_name]) ) {
+            throw new Exception("No blueprint defined for '$blueprint_name'");
+        }
+
+        foreach($associations as $association) {
+            if($association instanceof Phactory_Association_ManyToMany) {
+                throw new Exception("ManyToMany associations cannot be used in Phactory::build()");
+            }
+        }
+            
+        return $blueprint->build($overrides, $associations);
     }
 
     /*
