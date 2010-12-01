@@ -1,7 +1,4 @@
 <?php
-require_once 'PHPUnit/Framework.php';
-
-require_once PHACTORY_PATH . '/Phactory.php';
 
 /**
  * Test class for Phactory.
@@ -11,12 +8,9 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
 {
     protected $pdo;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
     protected function setUp()
     {
+        require_once PHACTORY_PATH . '/Phactory.php';
         $this->pdo = new PDO("sqlite:test.db");
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -79,6 +73,48 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         Phactory::define('user',
                          array('name' => 'testuser'),
                          array('role' => Phactory::manyToOne('roles', 'role_id')));
+    }
+
+    public function testBuild()
+    {
+        $name = 'testuser';
+
+        // define and build user
+        Phactory::define('user', array('name' => $name));
+        $user = Phactory::build('user');
+
+        // test returned Phactory_Row
+        $this->assertType('Phactory_Row', $user);
+        $this->assertEquals($user->name, $name);
+    }
+
+    public function testBuildWithOverrides()
+    {
+        $name = 'testuser';
+        $override_name = 'override_user';
+
+        // define and build user
+        Phactory::define('user', array('name' => $name));
+        $user = Phactory::build('user', array('name' => $override_name));
+
+        // test returned Phactory_Row
+        $this->assertType('Phactory_Row', $user);
+        $this->assertEquals($override_name, $user->name);
+    }
+
+    public function testBuildWithAssociations()
+    {
+        Phactory::define('role',
+                         array('name' => 'admin'));
+        Phactory::define('user',
+                         array('name' => 'testuser'),
+                         array('role' => Phactory::manyToOne('role', 'role_id')));
+
+        $role = Phactory::create('role'); 
+        $user = Phactory::buildWithAssociations('user', array('role' => $role));
+
+        $this->assertNotNull($role->id);
+        $this->assertEquals($role->id, $user->role_id);
     }
 
     public function testCreate()
@@ -179,6 +215,34 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->pdo->exec("DROP TABLE blogs_tags");
     }
 
+    public function testCreateWithManyToManyAssociations() {
+        $this->pdo->exec("CREATE TABLE blogs ( id INTEGER PRIMARY KEY, title TEXT )");
+        $this->pdo->exec("CREATE TABLE tags ( id INTEGER PRIMARY KEY, name TEXT )");
+        $this->pdo->exec("CREATE TABLE blogs_tags ( blog_id INTEGER, tag_id INTEGER )");
+
+        Phactory::define('tag',
+                         array('name' => 'Test Tag'));
+        Phactory::define('blog',
+                         array('title' => 'Test Title'),
+                         array('tags' => Phactory::manyToMany('tags', 'blogs_tags', 'id', 'blog_id', 'tag_id', 'id')));
+
+        $tags = array(Phactory::create('tag'), Phactory::create('tag'));
+        $blog = Phactory::createWithAssociations('blog', array('tags' => $tags));
+
+        $result = $this->pdo->query("SELECT * FROM blogs_tags");
+        foreach($tags as $tag) {
+            $row = $result->fetch();
+            $this->assertNotEquals(false, $row);
+            $this->assertEquals($blog->getId(), $row['blog_id']);
+            $this->assertEquals($tag->getId(), $row['tag_id']);
+        }
+        $result->closeCursor();
+
+        $this->pdo->exec("DROP TABLE blogs");
+        $this->pdo->exec("DROP TABLE tags");
+        $this->pdo->exec("DROP TABLE blogs_tags");
+    }
+
     public function testDefineAndCreateWithSequence()
     {
         Phactory::define('user', array('name' => 'user\$n'));
@@ -203,6 +267,24 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         // test retrieved db row
         $this->assertEquals($name, $db_user->name);
         $this->assertType('Phactory_Row', $db_user);
+    }
+
+    public function testGetAll()
+    {
+        $name = 'testuser';
+
+        // define and create users in db
+        Phactory::define('user', array('name' => $name));
+        $users = array(Phactory::create('user'), Phactory::create('user'));
+
+        // get expected rows from database
+        $db_users = Phactory::getAll('user', array('name' => $name)); 
+
+        // test retrieved db rows
+        $this->assertEquals(2, count($db_users));
+        $this->assertEquals($name, $db_users[0]->name);
+        $this->assertEquals($name, $db_users[1]->name);
+        $this->assertType('Phactory_Row', $db_users[0]);
     }
 
     public function testGetMultiAttributes()

@@ -1,4 +1,5 @@
-<?
+<?php
+
 require_once('DbUtil/MysqlUtil.php');
 require_once('DbUtil/SqliteUtil.php');
 

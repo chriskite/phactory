@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Phactory_Association_ManyToOne {
     protected $_from_table;

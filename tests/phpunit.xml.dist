@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
-<phpunit bootstrap="bootstrap.php">
+<phpunit bootstrap="bootstrap.php" processIsolation="true">
     <testsuites>
         <testsuite name="phactory">
             <directory>phactory</directory>
+        </testsuite>
+        <testsuite name="phactory_mongo">
+            <directory>phactory_mongo</directory>
         </testsuite>
     </testsuites>
     <!--<logging>

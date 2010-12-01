@@ -1,4 +1,5 @@
-<?
+<?php
+
 require_once('Phactory/Logger.php');
 require_once('Phactory/Sequence.php');
 require_once('Phactory/Table.php');
@@ -78,6 +79,19 @@ class Phactory {
     }
 
     /*
+     * Build a Phactory_Row object, optionally
+     * overriding some or all of the default values.
+     * The row is not saved to the database.
+     *
+     * @param string $table name of the table
+     * @param array $overrides key => value pairs of column => value
+     * @return object Phactory_Row
+     */
+    public static function build($table, $overrides = array()) {
+        return self::buildWithAssociations($table, array(), $overrides);
+    }
+
+    /*
      * Instantiate a row in the specified table, optionally
      * overriding some or all of the default values.
      * The row is saved to the database, and returned
@@ -97,6 +111,30 @@ class Phactory {
     }
 
     /*
+     * Build a Phactory_Row object, optionally
+     * overriding some or all of the default values.
+     * The row is not saved to the database.
+     *
+     * @param string $blueprint_name name of the blueprint to use 
+     * @param array $associations [table name] => [Phactory_Row]
+     * @param array $overrides key => value pairs of column => value
+     * @return object Phactory_Row
+     */
+    public static function buildWithAssociations($blueprint_name, $associations = array(), $overrides = array()) {
+        if(! ($blueprint = self::$_blueprints[$blueprint_name]) ) {
+            throw new Exception("No blueprint defined for '$blueprint_name'");
+        }
+
+        foreach($associations as $association) {
+            if($association instanceof Phactory_Association_ManyToMany) {
+                throw new Exception("ManyToMany associations cannot be used in Phactory::build()");
+            }
+        }
+            
+        return $blueprint->build($overrides, $associations);
+    }
+
+    /*
      * Get a row from the database as a Phactory_Row.
      * $byColumn is like array('id' => 123).
      *
@@ -105,6 +143,10 @@ class Phactory {
      * @return object Phactory_Row
      */
     public static function get($table_name, $byColumns) {		
+        return array_shift(self::getAll($table_name, $byColumns));
+    }
+
+    public static function getAll($table_name, $byColumns) {
         if(!is_array($byColumns)) {
             throw new Exception("\$byColumns must be an associative array of 'column => value' pairs");
         }
@@ -115,21 +157,28 @@ class Phactory {
         $params = array();
 		foreach($byColumns as $field => $value)
 		{
-			$equals[] = $field . ' = ?';
+			$equals[] = '`' . $field .'` = ?';
 			$params[] = $value;
 		}
 								
         $where_sql = implode(' AND ', $equals);
+        $sql = "SELECT * FROM `" . $table->getName() . "` WHERE " . $where_sql;
 
-        $stmt = self::$_pdo->prepare("SELECT * FROM `" . $table->getName() . "` WHERE " . $where_sql);
-        $stmt->execute($params);
-        $result = $stmt->fetch();
-        		
-        if(false === $result) {
-            return null;
+        $stmt = self::$_pdo->prepare($sql);
+        $r = $stmt->execute($params);
+
+        if($r === false){
+            $error = $stmt->errorInfo();
+            Phactory_Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
         }
 
-        return new Phactory_Row($table, $result);
+        $results = $stmt->fetchAll();
+
+        $rows = array();
+        foreach($results as $result) {
+            $rows[] = new Phactory_Row($table_name, $result);
+        }
+        return $rows;
     }
 
     /*

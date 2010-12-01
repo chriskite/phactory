@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Phactory_Row {
     protected $_table;

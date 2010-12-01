@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Phactory_Blueprint {
     protected $_table;
@@ -47,28 +47,26 @@ class Phactory_Blueprint {
     }
 
     /*
-     * Reify a Blueprint as a Phactory_Row. Optionally use an array
+     * Build a Phactory_Row from this Blueprint. Optionally use an array
      * of associated objects to set fk columns.
+     *
+     * Note that this function ignores ManyToMany associations, as those
+     * can't be handled unless the Row is actually saved to the db.
      *
      * @param array $associated  [table name] => [Phactory_Row]
      */
-    public function create($overrides = array(), $associated = array()) {
+    public function build($overrides = array(), $associated = array()) {
+        // process one-to-one and many-to-one relations
         $assoc_keys = array();
-        $many_to_many = array();
-        if($associated) {
-            foreach($associated as $name => $row) {
-                if(!isset($this->_associations[$name])) {
-                    throw new Exception("No association '$name' defined");
-                }
+        foreach($associated as $name => $row) {
+            if(!isset($this->_associations[$name])) {
+                throw new Exception("No association '$name' defined");
+            }
 
-                $association = $this->_associations[$name];
-
-                if($association instanceof Phactory_Association_ManyToMany) {
-                    $many_to_many[$name] = array($row, $association);
-                } else {
-                    $fk_column = $association->getFromColumn();
-                    $assoc_keys[$fk_column] = $row->getId();
-                }
+            $association = $this->_associations[$name];
+            if(!$association instanceof Phactory_Association_ManyToMany) {
+                $fk_column = $association->getFromColumn();
+                $assoc_keys[$fk_column] = $row->getId();
             }
         }
     
@@ -76,21 +74,45 @@ class Phactory_Blueprint {
 
         $this->_evalSequence($data);
 
-        $row = new Phactory_Row($this->_table, $data); 
+        $built = new Phactory_Row($this->_table, $data); 
 
         if($overrides) {
             foreach($overrides as $field => $value) {
-                $row->$field = $value;
+                $built->$field = $value;
             }
         }
-     
-        $row->save();
-        
-        if($many_to_many) {
-            $this->_associateManyToMany($row, $many_to_many);
+
+        return $built;
+    }
+
+    /*
+     * Reify a Blueprint as a Phactory_Row. Optionally use an array
+     * of associated objects to set fk columns.
+     *
+     * @param array $associated  [table name] => [Phactory_Row]
+     */
+    public function create($overrides = array(), $associated = array()) {
+        $built = $this->build($overrides, $associated); 
+
+        // process any many-to-many associations
+        $many_to_many = array();
+        foreach($associated as $name => $row) {
+            $association = $this->_associations[$name];
+            if($association instanceof Phactory_Association_ManyToMany) {
+                if(!is_array($row)) {
+                    $row = array($row);
+                }
+                $many_to_many[$name] = array($row, $association);
+            }
         }
 
-        return $row;
+        $built->save();
+        
+        if($many_to_many) {
+            $this->_associateManyToMany($built, $many_to_many);
+        }
+
+        return $built;
     }
 
     /*
@@ -129,22 +151,24 @@ class Phactory_Blueprint {
     protected function _associateManyToMany($row, $many_to_many) {
         $pdo = Phactory::getConnection();
         foreach($many_to_many as $name => $arr) {
-            list($to_row, $assoc) = $arr;
-            $join_table = $assoc->getJoinTable();
-            $from_join_column = $assoc->getFromJoinColumn();
-            $to_join_column = $assoc->getToJoinColumn();
-			
-            $sql = "INSERT INTO `$join_table` 
-                    (`$from_join_column`, `$to_join_column`)
-                    VALUES
-                    (:from_id, :to_id)";
-            $stmt = $pdo->prepare($sql);
-            $r = $stmt->execute(array(':from_id' => $row->getId(), ':to_id' => $to_row->getId()));
-			
-			if($r === false){
-				$error= $stmt->errorInfo();
-				Phactory_Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
-			}
+            list($to_rows, $assoc) = $arr;
+            foreach($to_rows as $to_row) {
+                $join_table = $assoc->getJoinTable();
+                $from_join_column = $assoc->getFromJoinColumn();
+                $to_join_column = $assoc->getToJoinColumn();
+                
+                $sql = "INSERT INTO `$join_table` 
+                        (`$from_join_column`, `$to_join_column`)
+                        VALUES
+                        (:from_id, :to_id)";
+                $stmt = $pdo->prepare($sql);
+                $r = $stmt->execute(array(':from_id' => $row->getId(), ':to_id' => $to_row->getId()));
+                
+                if($r === false){
+                    $error= $stmt->errorInfo();
+                    Phactory_Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
+                }
+            }
         }
     }
 }
