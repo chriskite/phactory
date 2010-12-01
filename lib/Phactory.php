@@ -143,6 +143,10 @@ class Phactory {
      * @return object Phactory_Row
      */
     public static function get($table_name, $byColumns) {		
+        return array_shift(self::getAll($table_name, $byColumns));
+    }
+
+    public static function getAll($table_name, $byColumns) {
         if(!is_array($byColumns)) {
             throw new Exception("\$byColumns must be an associative array of 'column => value' pairs");
         }
@@ -158,23 +162,23 @@ class Phactory {
 		}
 								
         $where_sql = implode(' AND ', $equals);
-	$sql = "SELECT * FROM `" . $table->getName() . "` WHERE " . $where_sql;
+        $sql = "SELECT * FROM `" . $table->getName() . "` WHERE " . $where_sql;
 
         $stmt = self::$_pdo->prepare($sql);
         $r = $stmt->execute($params);
 
-	if($r === false){
-		$error = $stmt->errorInfo();
-		Phactory_Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
-	}
-
-        $result = $stmt->fetch();
-        		
-        if(false === $result) {
-            return null;
+        if($r === false){
+            $error = $stmt->errorInfo();
+            Phactory_Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
         }
 
-        return new Phactory_Row($table, $result);
+        $results = $stmt->fetchAll();
+
+        $rows = array();
+        foreach($results as $result) {
+            $rows[] = new Phactory_Row($table_name, $result);
+        }
+        return $rows;
     }
 
     /*

@@ -269,6 +269,24 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->assertType('Phactory_Row', $db_user);
     }
 
+    public function testGetAll()
+    {
+        $name = 'testuser';
+
+        // define and create users in db
+        Phactory::define('user', array('name' => $name));
+        $users = array(Phactory::create('user'), Phactory::create('user'));
+
+        // get expected rows from database
+        $db_users = Phactory::getAll('user', array('name' => $name)); 
+
+        // test retrieved db rows
+        $this->assertEquals(2, count($db_users));
+        $this->assertEquals($name, $db_users[0]->name);
+        $this->assertEquals($name, $db_users[1]->name);
+        $this->assertType('Phactory_Row', $db_users[0]);
+    }
+
     public function testGetMultiAttributes()
     {
         $name = 'testuser';
