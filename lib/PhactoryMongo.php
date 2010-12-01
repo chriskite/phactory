@@ -142,7 +142,7 @@ class Phactory {
     }
 
     /*
-     * Get results from the database as an cursor.
+     * Get results from the database as a cursor.
      *
      * @param string $collection_name name of the collection 
      * @param array $query a MongoDB query
