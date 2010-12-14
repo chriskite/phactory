@@ -148,7 +148,7 @@ class Phactory {
      * @param array $query a MongoDB query
      * @return MongoCursor
      */
-    public static function getAll($collection_name, $query) {		
+    public static function getAll($collection_name, $query = array()) {		
         if(!is_array($query)) {
             throw new Exception("\$query must be an associative array of 'field => value' pairs");
         }
