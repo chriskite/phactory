@@ -66,7 +66,8 @@ class Phactory_Blueprint {
             $association = $this->_associations[$name];
             if(!$association instanceof Phactory_Association_ManyToMany) {
                 $fk_column = $association->getFromColumn();
-                $assoc_keys[$fk_column] = $row->getId();
+                $to_column = $association->getToColumn();
+                $assoc_keys[$fk_column] = $row->$to_column;
             }
         }
     
