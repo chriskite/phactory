@@ -66,7 +66,8 @@ class Phactory_Blueprint {
             $association = $this->_associations[$name];
             if(!$association instanceof Phactory_Association_ManyToMany) {
                 $fk_column = $association->getFromColumn();
-                $assoc_keys[$fk_column] = $row->getId();
+                $to_column = $association->getToColumn();
+                $assoc_keys[$fk_column] = $row->$to_column;
             }
         }
     
@@ -143,7 +144,13 @@ class Phactory_Blueprint {
         $n = $this->_sequence->next();
         foreach($data as &$value) {
             if(false !== strpos($value, '$')) {
-                $value = eval('return "'. stripslashes($value) . '";');
+                $value = strtr($value, array('$n' => $n));
+            }
+            
+            if(preg_match_all('/#\{(.+)\}/U', $value, $matches)) {
+                foreach($matches[1] as $match) {
+                    $value = preg_replace('/#\{.+\}/U', eval('return ' . $match . ';'), $value, 1);                    
+                }
             }
         }
     }

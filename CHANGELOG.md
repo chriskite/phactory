@@ -1,3 +1,14 @@
+## 0.3.0 / 2011-04-18
+
+* Minor Improvements
+
+    *  Argument to Phactory::define() evals expressions like '#{php-code}'
+
+* Bug Fixes
+
+    * Fixed bug where association's to column was not being used
+
+
 ## 0.2.0 / 2010-12-01
 
 * Major Improvements
