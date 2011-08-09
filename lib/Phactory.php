@@ -172,10 +172,8 @@ class Phactory {
             Phactory_Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
         }
 
-        $results = $stmt->fetchAll();
-
         $rows = array();
-        foreach($results as $result) {
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $rows[] = new Phactory_Row($table_name, $result);
         }
         return $rows;

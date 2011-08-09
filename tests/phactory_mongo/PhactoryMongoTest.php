@@ -32,13 +32,13 @@ class PhactoryMongoTest extends PHPUnit_Framework_TestCase
         $db = $mongo->testdb;
         Phactory::setDb($db);
         $db = Phactory::getDb();
-        $this->assertType('MongoDB', $db);
+        $this->assertInstanceOf('MongoDB', $db);
     }
 
     public function testGetDb()
     {
         $db = Phactory::getDb();
-        $this->assertType('MongoDB', $db);
+        $this->assertInstanceOf('MongoDB', $db);
     }
 
     public function testDefine()
@@ -73,7 +73,7 @@ class PhactoryMongoTest extends PHPUnit_Framework_TestCase
         $user = Phactory::create('user');
 
         // test returned array
-        $this->assertType('array', $user);
+        $this->assertInternalType('array', $user);
         $this->assertEquals($user['name'], $name);
 
         // retrieve and test expected document from database
@@ -91,7 +91,7 @@ class PhactoryMongoTest extends PHPUnit_Framework_TestCase
         $user = Phactory::create('user', array('name' => $override_name));
 
         // test returned array 
-        $this->assertType('array', $user);
+        $this->assertInternalType('array', $user);
         $this->assertEquals($user['name'], $override_name);
 
         // retrieve and test expected document from database
@@ -150,7 +150,7 @@ class PhactoryMongoTest extends PHPUnit_Framework_TestCase
         $db_user = Phactory::get('user', array('name' => $name)); 
 
         // test retrieved db row
-        $this->assertType('array', $db_user);
+        $this->assertInternalType('array', $db_user);
         $this->assertEquals($name, $db_user['name']);
     }
 
