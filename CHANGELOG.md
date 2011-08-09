@@ -1,3 +1,9 @@
+## 0.3.1 / 2011-08-09
+
+* Bug Fixes
+
+    * Phactory::get() and getAll() now use PDO::FETCH_ASSOC instead of FETCH_BOTH
+
 ## 0.3.0 / 2011-04-18
 
 * Minor Improvements
