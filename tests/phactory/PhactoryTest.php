@@ -243,9 +243,6 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->pdo->exec("DROP TABLE blogs_tags");
     }
 
-    /**
-     * @group foo
-     **/
     public function testDefineAndCreateWithSequence()
     {
         Phactory::define('user', array('name' => 'user$n'));
@@ -258,18 +255,13 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
 
     public function testGet()
     {
-        $name = 'testuser';
+        $data = array('id' => 1, 'name' => 'testname', 'role_id' => null);
+        Phactory::define('user', $data);
+        Phactory::create('user');
+        $user = Phactory::get('user', array('id' => 1));
 
-        // define and create user in db
-        Phactory::define('user', array('name' => $name));
-        $user = Phactory::create('user');
-
-        // get() expected row from database
-        $db_user = Phactory::get('user', array('name' => $name)); 
-
-        // test retrieved db row
-        $this->assertEquals($name, $db_user->name);
-        $this->assertInstanceOf('Phactory_Row', $db_user);
+        $this->assertEquals($data, $user->toArray());
+        $this->assertInstanceOf('Phactory_Row', $user);
     }
 
     public function testGetAll()
