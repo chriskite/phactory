@@ -40,7 +40,7 @@ class Phactory_BlueprintTest extends PHPUnit_Framework_TestCase
 		$phactory_row = $phactory_blueprint->create();
 		
 		//test $phactory_row is of type Phactory_Row and that object stored name correctly
-		$this->assertType('Phactory_Row', $phactory_row);
+		$this->assertInstanceOf('Phactory_Row', $phactory_row);
 		$this->assertEquals($phactory_row->name, $name); 
     }
 }
