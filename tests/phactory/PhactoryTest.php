@@ -37,13 +37,13 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $pdo = new PDO("sqlite:test.db");
         Phactory::setConnection($pdo);
         $pdo = Phactory::getConnection();
-        $this->assertType('PDO', $pdo);
+        $this->assertInstanceOf('PDO', $pdo);
     }
 
     public function testGetConnection()
     {
         $pdo = Phactory::getConnection();
-        $this->assertType('PDO', $pdo);
+        $this->assertInstanceOf('PDO', $pdo);
     }
 
     public function testDefine()
@@ -84,7 +84,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $user = Phactory::build('user');
 
         // test returned Phactory_Row
-        $this->assertType('Phactory_Row', $user);
+        $this->assertInstanceOf('Phactory_Row', $user);
         $this->assertEquals($user->name, $name);
     }
 
@@ -98,7 +98,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $user = Phactory::build('user', array('name' => $override_name));
 
         // test returned Phactory_Row
-        $this->assertType('Phactory_Row', $user);
+        $this->assertInstanceOf('Phactory_Row', $user);
         $this->assertEquals($override_name, $user->name);
     }
 
@@ -126,7 +126,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $user = Phactory::create('user');
 
         // test returned Phactory_Row
-        $this->assertType('Phactory_Row', $user);
+        $this->assertInstanceOf('Phactory_Row', $user);
         $this->assertEquals($user->name, $name);
 
         // retrieve expected row from database
@@ -147,7 +147,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $user = Phactory::create('user', array('name' => $override_name));
 
         // test returned Phactory_Row
-        $this->assertType('Phactory_Row', $user);
+        $this->assertInstanceOf('Phactory_Row', $user);
         $this->assertEquals($user->name, $override_name);
 
         // retrieve expected row from database
@@ -243,9 +243,12 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->pdo->exec("DROP TABLE blogs_tags");
     }
 
+    /**
+     * @group foo
+     **/
     public function testDefineAndCreateWithSequence()
     {
-        Phactory::define('user', array('name' => 'user\$n'));
+        Phactory::define('user', array('name' => 'user$n'));
 
         for($i = 0; $i < 5; $i++) {
             $user = Phactory::create('user');
@@ -266,7 +269,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
 
         // test retrieved db row
         $this->assertEquals($name, $db_user->name);
-        $this->assertType('Phactory_Row', $db_user);
+        $this->assertInstanceOf('Phactory_Row', $db_user);
     }
 
     public function testGetAll()
@@ -284,7 +287,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, count($db_users));
         $this->assertEquals($name, $db_users[0]->name);
         $this->assertEquals($name, $db_users[1]->name);
-        $this->assertType('Phactory_Row', $db_users[0]);
+        $this->assertInstanceOf('Phactory_Row', $db_users[0]);
     }
 
     public function testGetMultiAttributes()
@@ -305,7 +308,7 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
         // test retrieved db row
         $this->assertEquals($name, $db_user->name);
         $this->assertEquals($role_id, $db_user->role_id);
-        $this->assertType('Phactory_Row', $db_user);
+        $this->assertInstanceOf('Phactory_Row', $db_user);
     }
 
     public function testRecall()
