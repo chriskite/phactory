@@ -55,7 +55,7 @@ class Phactory {
      * @param array $defaults key => value pairs of column => value, or a phactory_blueprint
      * @param array $associations array of phactory_associations
      */
-    public static function define($blueprint_name, $defaults, $associations = array()) {
+    public static function define($blueprint_name, $defaults = array(), $associations = array()) {
         if($defaults instanceof Phactory_Blueprint) {
             $blueprint = $defaults;
         } else {

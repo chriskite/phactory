@@ -1,3 +1,9 @@
+## 0.3.2 / 2011-08-18
+
+* Bug Fixes
+
+    * Fix Phactory::define() to only require the first argument
+
 ## 0.3.1 / 2011-08-09
 
 * Bug Fixes

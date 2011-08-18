@@ -50,6 +50,9 @@ class PhactoryTest extends PHPUnit_Framework_TestCase
     {
         // test that define() doesn't throw an exception when called correctly
         Phactory::define('user', array('name' => 'testuser'));
+
+        // define should only require one argument - the blueprint name
+        Phactory::define('user');
     }
 
 
