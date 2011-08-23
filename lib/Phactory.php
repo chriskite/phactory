@@ -142,8 +142,10 @@ class Phactory {
      * @param array $byColumn
      * @return object Phactory_Row
      */
-    public static function get($table_name, $byColumns) {		
-        return array_shift(self::getAll($table_name, $byColumns));
+    public static function get($table_name, $byColumns) {
+        $allRows = self::getAll($table_name, $byColumns);
+        
+        return array_shift($allRows);
     }
 
     public static function getAll($table_name, $byColumns) {
