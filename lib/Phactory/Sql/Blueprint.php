@@ -14,7 +14,7 @@ class Blueprint {
             throw new \Exception('$phactory must be an instance of Phactory\Sql\Phactory');
         }
 
-        $this->_table = new Table($name, true, $phactory); 
+        $this->_table = new Table($name, true, $phactory);
         $this->_defaults = $defaults;
         $this->_sequence = new Sequence();
         $this->_phactory = $phactory;
@@ -78,12 +78,12 @@ class Blueprint {
                 $assoc_keys[$fk_column] = $row->$to_column;
             }
         }
-    
+
         $data = array_merge($this->_defaults, $assoc_keys);
 
         $this->_evalSequence($data);
 
-        $built = new Row($this->_table, $data, $this->_phactory); 
+        $built = new Row($this->_table, $data, $this->_phactory);
 
         if($overrides) {
             foreach($overrides as $field => $value) {
@@ -101,7 +101,7 @@ class Blueprint {
      * @param array $associated  [table name] => [Row]
      */
     public function create($overrides = array(), $associated = array()) {
-        $built = $this->build($overrides, $associated); 
+        $built = $this->build($overrides, $associated);
 
         // process any many-to-many associations
         $many_to_many = array();
@@ -116,7 +116,7 @@ class Blueprint {
         }
 
         $built->save();
-        
+
         if($many_to_many) {
             $this->_associateManyToMany($built, $many_to_many);
         }
@@ -131,7 +131,7 @@ class Blueprint {
         $db_util = DbUtilFactory::getDbUtil($this->_phactory);
         $db_util->disableForeignKeys();
 
-    	try {
+        try {
             $sql = "DELETE FROM {$this->_table->getName()}";
             $this->_phactory->getConnection()->exec($sql);
         } catch(Exception $e) { }
@@ -154,10 +154,10 @@ class Blueprint {
             if(false !== strpos($value, '$')) {
                 $value = strtr($value, array('$n' => $n));
             }
-            
+
             if(preg_match_all('/#\{(.+)\}/U', $value, $matches)) {
                 foreach($matches[1] as $match) {
-                    $value = preg_replace('/#\{.+\}/U', eval('return ' . $match . ';'), $value, 1);                    
+                    $value = preg_replace('/#\{.+\}/U', eval('return ' . $match . ';'), $value, 1);
                 }
             }
         }
@@ -171,14 +171,16 @@ class Blueprint {
                 $join_table = $assoc->getJoinTable();
                 $from_join_column = $assoc->getFromJoinColumn();
                 $to_join_column = $assoc->getToJoinColumn();
-                
-                $sql = "INSERT INTO `$join_table` 
-                        (`$from_join_column`, `$to_join_column`)
+
+                // Quote table names as underlying DB expects it
+                $sql = "INSERT INTO ".$this->_table->quoteIdentifier($join_table)."
+                        (".$this->_table->quoteIdentifier($from_join_column).", ".$this->_table->quoteIdentifier($to_join_column).")
                         VALUES
                         (:from_id, :to_id)";
+
                 $stmt = $pdo->prepare($sql);
                 $r = $stmt->execute(array(':from_id' => $row->getId(), ':to_id' => $to_row->getId()));
-                
+
                 if($r === false){
                     $error= $stmt->errorInfo();
                     Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
