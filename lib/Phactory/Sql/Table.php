@@ -36,10 +36,23 @@ class Table {
     }
 
     public function getColumns() {
-       return $this->_db_util->getColumns($this->_name); 
+       return $this->_db_util->getColumns($this->_name);
     }
 
     public function __toString() {
         return $this->_name;
     }
+
+    /**
+     * Added by Artūrs Gailītis, to support database-specific quote characters
+     *
+     * @param string $identifier - table/column name to be quoted in a proper
+     *        way for the database driver, table is using.
+     * @return string quoted identifier
+     */
+    public function quoteIdentifier($identifier)
+    {
+        return $this->_db_util->quoteIdentifier($identifier);
+    }
+
 }
