@@ -12,7 +12,7 @@ class Row {
         if(!$table instanceof Table) {
             $table = new Table($table, true, $phactory);
         }
-        $this->_table = $table; 
+        $this->_table = $table;
         foreach($data as $key => $value) {
             $this->_storage[$key] = $value;
         }
@@ -30,7 +30,8 @@ class Row {
         $data = array();
         $params = array();
         foreach($this->_storage as $key => $value) {
-            $data["$key"] = ":$key";
+            $index = $this->_table->quoteIdentifier($key);
+            $data[$index] = ":$key";
             $params[":$key"] = $value;
         }
 
@@ -44,43 +45,43 @@ class Row {
 
         $stmt = $pdo->prepare($sql);
         $r = $stmt->execute($params);
-				
-		if($r === false){
-			$error= $stmt->errorInfo();
-			Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
-		}
-		
-		// only works if table's primary key autoincrements
-        $id = $pdo->lastInsertId();
-				
-        if($pk = $this->_table->getPrimaryKey()) {
-			if($id){
-				$this->_storage[$pk] = $id;
-			}else{
-				// if key doesn't autoincrement, find last inserted row and set the primary key.
-				$sql = "SELECT * FROM {$this->_table} WHERE";
-				
-				for($i = 0, $size = sizeof($keys); $i < $size; ++$i){
-					$sql .= " {$keys[$i]} = {$values[$i]} AND";
-				}
-				
-				$sql = substr($sql, 0, -4);
-				
-				$stmt = $pdo->prepare($sql);
-				$stmt->execute($params);
-				$result = $stmt->fetch(\PDO::FETCH_ASSOC);
-				
-				$this->_storage[$pk] = $result[$pk];
-			}
+
+        if($r === false){
+            $error= $stmt->errorInfo();
+            Logger::error('SQL statement failed: '.$sql.' ERROR MESSAGE: '.$error[2].' ERROR CODE: '.$error[1]);
         }
-		
+
+        // only works if table's primary key autoincrements
+        $id = $pdo->lastInsertId();
+
+        if($pk = $this->_table->getPrimaryKey()) {
+            if($id){
+                $this->_storage[$pk] = $id;
+            }else{
+                // if key doesn't autoincrement, find last inserted row and set the primary key.
+                $sql = "SELECT * FROM {$this->_table} WHERE";
+
+                for($i = 0, $size = sizeof($keys); $i < $size; ++$i){
+                    $sql .= " {$keys[$i]} = {$values[$i]} AND";
+                }
+
+                $sql = substr($sql, 0, -4);
+
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($params);
+                $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+                $this->_storage[$pk] = $result[$pk];
+            }
+        }
+
         return $r;
     }
 
-	public function toArray() {
+    public function toArray() {
         return $copy = $this->_storage;
     }
-	
+
     public function __get($key) {
         return $this->_storage[$key];
     }
