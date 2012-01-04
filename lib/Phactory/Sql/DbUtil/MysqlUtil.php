@@ -4,20 +4,20 @@ namespace Phactory\Sql\DbUtil;
 
 use Phactory\Sql\Phactory;
 
-class MysqlUtil {
+class MysqlUtil extends AbstractDbUtil
+{
+    protected $_quoteChar = '`';
 
-	public function __construct(Phactory $phactory) {
-		$this->_pdo = $phactory->getConnection();
+    public function getPrimaryKey($table) {
+        $table = $this->quoteIdentifier($table);
+        $stmt = $this->_pdo->query("SHOW KEYS FROM $table WHERE Key_name = 'PRIMARY'");
+        $result = $stmt->fetch();
+        return $result['Column_name'];
     }
 
-	public function getPrimaryKey($table) {
-		$stmt = $this->_pdo->query("SHOW KEYS FROM `$table` WHERE Key_name = 'PRIMARY'");
-		$result = $stmt->fetch();
-		return $result['Column_name'];
-	}
-
     public function getColumns($table) {
-        $stmt = $this->_pdo->query("DESCRIBE `$table`");
+        $table = $this->quoteIdentifier($table);
+        $stmt = $this->_pdo->query("DESCRIBE $table");
         $columns = array();
         while($row = $stmt->fetch()) {
             $columns[] = $row['Field'];
