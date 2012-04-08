@@ -14,6 +14,9 @@ class DbUtilFactory {
 			case 'mysql':
 				return new DbUtil\MysqlUtil($phactory);
 				break;
+            case 'pgsql':
+                return new DbUtil\PgsqlUtil($phactory);
+                break;
 			case 'sqlite':
 				return new DbUtil\SqliteUtil($phactory);
 				break;

@@ -30,7 +30,7 @@ class Row {
         $data = array();
         $params = array();
         foreach($this->_storage as $key => $value) {
-            $data["`$key`"] = ":$key";
+            $data["$key"] = ":$key";
             $params[":$key"] = $value;
         }
 
