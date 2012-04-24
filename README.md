@@ -17,6 +17,7 @@ be associated in the database upon creation.
 ## Database Support
 * MySQL
 * Sqlite
+* Postgresql
 
 ## Language Support
 * PHP >= 5.2
