@@ -74,5 +74,18 @@ class RowTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($data, $user->toArray());
     }
 
+    public function testFill()
+    {
+        $data = array('id' => 1);
+        $row = new Row('user', $data, $this->phactory);
+        $arr = $row->toArray();
+        
+        $this->assertEquals($data, $arr);
+
+        $data['name'] = null;
+        $arr = $row->fill()->toArray();
+
+        $this->assertEquals($data, $arr);
+    }
 }
 ?>

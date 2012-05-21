@@ -88,4 +88,14 @@ class Row {
     public function __set($key, $value) {
         $this->_storage[$key] = $value;
     }
+
+    public function fill() {
+        $columns = $this->_table->getColumns();
+        foreach ($columns as $column) {
+            if ( ! isset($this->_storage[$column]) ) {
+               $this->_storage[$column] = null;
+            }
+        }
+        return $this;
+    }
 }
