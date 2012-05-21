@@ -20,7 +20,7 @@ be associated in the database upon creation.
 * Postgresql
 
 ## Language Support
-* PHP >= 5.2
+* PHP >= 5.3
 
 ## Limitations
 * Each table must have a single integer primary key for associations to work.
