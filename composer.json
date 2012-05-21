@@ -1,6 +1,8 @@
 {
-    "name": "Phactory",
+    "name": "chriskite/phactory",
     "description": "A Database Factory for PHP Unit Tests",
+    "keywords": ["testing","database","mysql","sqlite","mongodb"],
+    "homepage": "http://phactory.org",
     "require": {
         "php": ">=5.3.0"
     },
