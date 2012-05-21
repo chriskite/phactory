@@ -151,7 +151,7 @@ class Phactory {
         $params = array();
 		foreach($byColumns as $field => $value)
 		{
-            $euqals[] = $table->quoteIdentifier($field) . ' = ?';
+            $equals[] = $table->quoteIdentifier($field) . ' = ?';
 			$params[] = $value;
 		}
 								
