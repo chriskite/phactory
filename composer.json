@@ -1,0 +1,11 @@
+{
+  "name": "chriskite/phactory",
+  "description": "A Database Factory for PHP Unit Tests",
+  "keywords": ["testing","database","mysql","sqlite","mongodb"],
+  "homepage": "http://phactory.org",
+  "autoload": {
+    "psr-0": {
+      "Phactory": "lib"
+    }
+  }
+}
