@@ -60,7 +60,6 @@ class Phactory_RowTest extends PHPUnit_Framework_TestCase
         $data = array('name' => 'testname');
         $row = new Phactory_Row('user', $data);
         $arr = $row->toArray();
-
         $this->assertEquals($data, $arr);
 
         //changing the returned array shouldn't change the row
@@ -75,6 +74,20 @@ class Phactory_RowTest extends PHPUnit_Framework_TestCase
         $user = Phactory::create('user');
 
         $this->assertEquals($data, $user->toArray());
+    }
+
+    public function testFill()
+    {
+        $data = array('id' => 1);
+        $row = new Phactory_Row('user', $data);
+        $arr = $row->toArray();
+        
+        $this->assertEquals($data, $arr);
+
+        $data['name'] = null;
+        $arr = $row->fill()->toArray();
+
+        $this->assertEquals($data, $arr);
     }
 
 }
