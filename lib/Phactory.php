@@ -65,6 +65,16 @@ class Phactory {
     }
 
     /*
+     * Alias for self::define()
+     *
+     * @param string $blueprint_name singular name of the table in the database
+     * @param array $defaults key => value pairs of column => value, or a phactory_blueprint
+     * @param array $associations array of phactory_associations
+     */
+    public static function defineBlueprint($blueprint_name, $defaults, $associations = array()) {
+        self::define($blueprint_name, $defaults, $associations = array());
+    }
+    /*
      * Instantiate a row in the specified table, optionally
      * overriding some or all of the default values.
      * The row is saved to the database, and returned
