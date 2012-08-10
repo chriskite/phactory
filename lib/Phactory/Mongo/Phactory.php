@@ -58,6 +58,14 @@ class Phactory {
     }
 
     /*
+    * alias for define per @jblotus pull request
+    * eventually we should just rename the original function
+    */
+    public function defineBlueprint($blueprint_name, $defaults, $associations = array()) {
+        $this->define($blueprint_name, $defaults, $associations);
+    }
+
+    /*
      * Instantiate a document in the specified collection, optionally
      * overriding some or all of the default values.
      * The document is saved to the database and returned as an array.

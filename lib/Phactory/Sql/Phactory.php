@@ -58,6 +58,14 @@ class Phactory {
     }
 
     /*
+     * alias for define per @jblotus pull request
+     * eventually we should just rename the original function
+     */
+    public function defineBlueprint($blueprint_name, $defaults = array(), $associations = array()) {
+        $this->define($blueprint_name, $defaults, $associations);
+    }
+
+    /*
      * Instantiate a row in the specified table, optionally
      * overriding some or all of the default values.
      * The row is saved to the database, and returned
