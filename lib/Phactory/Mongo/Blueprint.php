@@ -102,7 +102,7 @@ class Blueprint {
     protected function _evalSequence(&$data) {
         $n = $this->_sequence->next();
         foreach($data as &$value) {
-            if(false !== strpos($value, '$')) {
+            if('string' === gettype($value) && false !== strpos($value, '$')) {
                 $value = eval('return "'. stripslashes($value) . '";');
             }
         }
