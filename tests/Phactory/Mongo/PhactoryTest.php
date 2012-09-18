@@ -65,18 +65,21 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
     public function testCreate()
     {
         $name = 'testuser';
+        $tags = array('one','two','three');
 
         // define and create user in db
-        $this->phactory->define('user', array('name' => $name));
+        $this->phactory->define('user', array('name' => $name, 'tags' => $tags));
         $user = $this->phactory->create('user');
 
         // test returned array
         $this->assertInternalType('array', $user);
         $this->assertEquals($user['name'], $name);
+        $this->assertEquals($user['tags'], $tags);
 
         // retrieve and test expected document from database
         $db_user = $this->db->users->findOne();
         $this->assertEquals($name, $db_user['name']);
+        $this->assertEquals($tags, $db_user['tags']);
     }
 
     public function testCreateWithOverrides()
@@ -88,7 +91,7 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
         $this->phactory->define('user', array('name' => $name));
         $user = $this->phactory->create('user', array('name' => $override_name));
 
-        // test returned array 
+        // test returned array
         $this->assertInternalType('array', $user);
         $this->assertEquals($user['name'], $override_name);
 
@@ -105,7 +108,7 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
                          array('name' => 'testuser'),
                          array('role' => $this->phactory->embedsOne('role')));
 
-        $role = $this->phactory->build('role'); 
+        $role = $this->phactory->build('role');
         $user = $this->phactory->createWithAssociations('user', array('role' => $role));
 
         $this->assertEquals($role['name'], $user['role']['name']);
@@ -128,11 +131,13 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testDefineAndCreateWithSequence()
     {
-        $this->phactory->define('user', array('name' => 'user\$n'));
+        $tags = array('foo$n','bar$n');
+        $this->phactory->define('user', array('name' => 'user\$n', 'tags' => $tags));
 
         for($i = 0; $i < 5; $i++) {
             $user = $this->phactory->create('user');
             $this->assertEquals("user$i", $user['name']);
+            $this->assertEquals(array("foo$i","bar$i"),$user['tags']);
         }
     }
 
@@ -145,7 +150,7 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
         $user = $this->phactory->create('user');
 
         // get() expected row from database
-        $db_user = $this->phactory->get('user', array('name' => $name)); 
+        $db_user = $this->phactory->get('user', array('name' => $name));
 
         // test retrieved db row
         $this->assertInternalType('array', $db_user);
