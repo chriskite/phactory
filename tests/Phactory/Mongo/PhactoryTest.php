@@ -131,11 +131,13 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testDefineAndCreateWithSequence()
     {
-        $this->phactory->define('user', array('name' => 'user\$n'));
+        $tags = array('foo$n','bar$n');
+        $this->phactory->define('user', array('name' => 'user\$n', 'tags' => $tags));
 
         for($i = 0; $i < 5; $i++) {
             $user = $this->phactory->create('user');
             $this->assertEquals("user$i", $user['name']);
+            $this->assertEquals(array("foo$i","bar$i"),$user['tags']);
         }
     }
 
