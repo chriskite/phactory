@@ -8,7 +8,7 @@ class Blueprint {
     protected $_sequence;
 
     public function __construct($name, $defaults, $associations = array(), Phactory $phactory) {
-        $this->_collection = new Collection($name, true, $phactory); 
+        $this->_collection = new Collection($name, true, $phactory);
         $this->_defaults = $defaults;
         $this->_sequence = new Sequence();
 
@@ -101,10 +101,10 @@ class Blueprint {
 
     protected function _evalSequence(&$data) {
         $n = $this->_sequence->next();
-        foreach($data as &$value) {
-            if(false !== strpos($value, '$')) {
+        array_walk_recursive($data,function(&$value) use ($n) {
+            if(is_string($value) && false !== strpos($value, '$')) {
                 $value = eval('return "'. stripslashes($value) . '";');
             }
-        }
+        });
     }
 }
