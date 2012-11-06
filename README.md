@@ -18,6 +18,7 @@ be associated in the database upon creation.
 * MySQL
 * Sqlite
 * Postgresql
+* MongoDB
 
 ## Language Support
 * PHP >= 5.3
