@@ -99,4 +99,8 @@ class Row {
         }
         return $this;
     }
+
+    public function __isset($name){
+      return(isset($this->_storage[$name]));
+    }
 }
