@@ -1,3 +1,5 @@
+*This file is woefully out of date at this point*
+
 ## 0.3.2 / 2011-08-18
 
 * Bug Fixes
