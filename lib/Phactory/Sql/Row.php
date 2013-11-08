@@ -25,7 +25,9 @@ class Row {
 
     public function save() {
         $pdo = $this->_phactory->getConnection();
-        $sql = "INSERT INTO " . $this->_table->quoteIdentifier((string) $this->_table) . " (";
+        $tableIdentifier = $this->_table->quoteIdentifier((string) $this->_table);
+
+        $sql = "INSERT INTO {$tableIdentifier} (";
         $data = array();
         $params = array();
         foreach($this->_storage as $key => $value) {
@@ -58,7 +60,7 @@ class Row {
                 $this->_storage[$pk] = $id;
             }else{
                 // if key doesn't autoincrement, find last inserted row and set the primary key.
-                $sql = "SELECT * FROM `{$this->_table}` WHERE";
+                $sql = "SELECT * FROM {$tableIdentifier} WHERE";
 
                 for($i = 0, $size = sizeof($keys); $i < $size; ++$i){
                     $sql .= " {$keys[$i]} = {$values[$i]} AND";
@@ -67,6 +69,7 @@ class Row {
                 $sql = substr($sql, 0, -4);
 
                 $stmt = $pdo->prepare($sql);
+
                 $stmt->execute($params);
                 $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
