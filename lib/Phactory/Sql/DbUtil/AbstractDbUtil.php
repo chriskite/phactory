@@ -25,12 +25,18 @@ abstract class AbstractDbUtil
     public function enableForeignKeys() {}
 
     /**
+     * Quotes identifier with _quoteChar if it is not quoted (no _quoteChar's in $identifier).
+     *
      * @param string $identifier name of table, column, etc
      * @return string quoted identifier
      */
     public function quoteIdentifier($identifier)
     {
         $quote = $this->getQuoteChar();
+        if (false !== strpos($identifier, $this->getQuoteChar())) {
+            $quote = '';
+        }
+
         return $quote.$identifier.$quote;
     }
 

@@ -26,20 +26,6 @@ class PgsqlUtil extends AbstractDbUtil
         return $result['attname'];
 	}
 
-    public function quoteIdentifier($identifier)
-    {
-        $quote = $this->_quoteChar;
-        if (false !== strpos($identifier, ".")) {
-            $parts = explode(".", $identifier);
-            $quotedParts = array();
-            foreach ($parts as $part) {
-                $quotedParts[] = $quote.$part.$quote;
-            }
-            return implode('.', $quotedParts);
-        }
-        return parent::quoteIdentifier($identifier);
-    }
-
     public function getColumns($table) {
         $query = "
             SELECT column_name
