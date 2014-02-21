@@ -7,7 +7,7 @@ class Collection {
     protected $_name;
     protected $_collection;
 
-    public function __construct($singular_name, $pluralize = true, Phactory $phactory) {
+    public function __construct($singular_name, Phactory $phactory, $pluralize = true) {
         $this->_singular = $singular_name;
         if($pluralize) {
             $this->_name = Inflector::pluralize($singular_name);
