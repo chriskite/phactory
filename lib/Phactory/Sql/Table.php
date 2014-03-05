@@ -8,7 +8,11 @@ class Table {
     protected $_db_util;
     protected $_phactory;
 
-    public function __construct($singular_name, $pluralize = true, Phactory $phactory) {
+    /**
+    * TODO:
+    *   we will most likely remove all related with $pluralize
+    **/
+    public function __construct($singular_name, $pluralize = false, Phactory $phactory) {
         $this->_phactory = $phactory;
         $this->_db_util = DbUtilFactory::getDbUtil($phactory);
         $this->_singular = $singular_name;
@@ -17,6 +21,9 @@ class Table {
         } else {
             $this->_name = $singular_name;
         }
+        // We don't care about singular names
+        // Always guess wrong and unwanted names
+        $this->_name = $singular_name;
     }
 
     public function getName() {

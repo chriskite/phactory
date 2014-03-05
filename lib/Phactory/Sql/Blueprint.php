@@ -14,7 +14,8 @@ class Blueprint {
             throw new \Exception('$phactory must be an instance of Phactory\Sql\Phactory');
         }
 
-        $this->_table = new Table($name, true, $phactory);
+        // Set pluralize to false, so we don't get the singular name
+        $this->_table = new Table($name, false, $phactory);
         $this->_defaults = $defaults;
         $this->_sequence = new Sequence();
         $this->_phactory = $phactory;
