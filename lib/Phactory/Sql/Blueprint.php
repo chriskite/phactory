@@ -139,7 +139,7 @@ class Blueprint {
         foreach($this->_associations as $association) {
             if($association instanceof Association\ManyToMany) {
                 try {
-                    $sql = "DELETE FROM {$association->getJoinTable()}";
+                    $sql = "DELETE FROM `{$association->getJoinTable()}`";
                     $this->_phactory->getConnection()->exec($sql);
                 } catch(Exception $e) { }
             }
