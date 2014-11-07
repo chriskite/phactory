@@ -48,12 +48,13 @@ class Phactory {
      * @param array $defaults key => value pairs of column => value, or a phactory_blueprint
      * @param array $associations array of phactory_associations
      */
-    public function define($blueprint_name, $defaults = array(), $associations = array()) {
+    public function define($blueprint_name, $defaults = array(), $associations = array(), $primary_key = null) {
         if($defaults instanceof Blueprint) {
             $blueprint = $defaults;
         } else {
             $blueprint = new Blueprint($blueprint_name, $defaults, $associations, $this);
         }
+        $blueprint->setTablePrimaryKey($primary_key);
         $this->_blueprints[$blueprint_name] = $blueprint;
     }
 

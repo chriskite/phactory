@@ -29,6 +29,10 @@ class Blueprint {
         }
     }
 
+    public function setTablePrimaryKey($primary_key) {
+        $this->_table->setPrimaryKey($primary_key);
+    }    
+
     public function setDefaults($defaults) {
         $this->_defaults = $defaults;
     }
