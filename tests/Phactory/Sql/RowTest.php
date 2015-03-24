@@ -6,10 +6,11 @@ class RowTest extends \PHPUnit_Framework_TestCase
 {
 	protected $pdo;
     protected $phactory;
+    private $dsn = 'sqlite:test.db';
 
     protected function setUp()
     {
-		$this->pdo = new \PDO("sqlite:test.db");
+		$this->pdo = new \PDO($this->dsn);
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         $this->pdo->exec("CREATE TABLE `users` ( id INTEGER PRIMARY KEY, name TEXT )");
@@ -26,6 +27,7 @@ class RowTest extends \PHPUnit_Framework_TestCase
 		$this->phactory->reset();
 
         $this->pdo->exec("DROP TABLE `users`");
+        $this->pdo->exec("DROP TABLE IF EXISTS `busers`");
     }
 
     public function testGetId()
@@ -34,6 +36,16 @@ class RowTest extends \PHPUnit_Framework_TestCase
         $row->save();
 
         $this->assertEquals($row->getId(), $row->id);
+    }
+
+    public function testSave_default_tableNameQuotedWithBackticks()
+    {
+        $expectedTableName = 'INSERT INTO `busers`';
+        $pdo = $this->mockPdo($expectedTableName);
+        $phactory = new Phactory($pdo);
+
+        $phactory_row = new Row('buser', array('name' => 'test'), $phactory);
+        $phactory_row->save();
     }
 
     public function testSave()
@@ -86,6 +98,20 @@ class RowTest extends \PHPUnit_Framework_TestCase
         $arr = $row->fill()->toArray();
 
         $this->assertEquals($data, $arr);
+    }
+
+    private function mockPdo($expectedTableName)
+    {
+        $stmt = $this->getMock('\PDOStatement', array('execute'));
+        $stmt->expects($this->any())->method('execute')->will($this->returnValue(true));
+
+        $pdo = $this->getMock('\PDO', array('prepare', 'lastInsertId'), array($this->dsn));
+        $pdo->expects($this->any())->method('prepare')->with($this->anything())->will($this->returnValue($stmt));
+        $pdo->expects($this->at(0))->method('prepare')->with($this->stringStartsWith($expectedTableName))->will(
+            $this->returnValue($stmt)
+        );
+        $pdo->expects($this->once())->method('lastInsertId')->will($this->returnValue(1));
+        return $pdo;
     }
 }
 ?>
