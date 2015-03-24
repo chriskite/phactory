@@ -88,7 +88,7 @@ class Blueprint {
      */
     public function create($overrides = array(), $associated = array()) {
         $data = $this->build($overrides, $associated);
-        $this->_collection->insert($data,array("safe"=>true));
+        $this->_collection->insert($data,array("w"=>1));
         return $data;
     }
 
