@@ -132,7 +132,7 @@ class Blueprint {
         $db_util->disableForeignKeys();
 
         try {
-            $sql = "DELETE FROM {$this->_table->getName()}";
+            $sql = "DELETE FROM `{$this->_table->getName()}`";
             $this->_phactory->getConnection()->exec($sql);
         } catch(Exception $e) { }
 
