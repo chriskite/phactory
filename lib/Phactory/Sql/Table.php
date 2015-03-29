@@ -6,6 +6,7 @@ class Table {
     protected $_singular;
     protected $_name;
     protected $_db_util;
+    protected $_primary_key;
     protected $_phactory;
 
     public function __construct($singular_name, $pluralize = true, Phactory $phactory) {
@@ -19,6 +20,10 @@ class Table {
         }
     }
 
+    public function setPrimaryKey($primary_key){
+        return $this->_primary_key = $primary_key;
+    }
+
     public function getName() {
         return $this->_name;
     }
@@ -28,6 +33,9 @@ class Table {
     }
 
     public function getPrimaryKey() {
+        if($this->_primary_key){
+            return $this->_primary_key;
+        }
         return $this->_db_util->getPrimaryKey($this->_name);
     }
 
