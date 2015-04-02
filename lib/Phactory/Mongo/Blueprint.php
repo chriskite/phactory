@@ -7,8 +7,8 @@ class Blueprint {
     protected $_defaults;
     protected $_sequence;
 
-    public function __construct($name, $defaults, $associations = array(), Phactory $phactory) {
-        $this->_collection = new Collection($name, true, $phactory);
+    public function __construct($name, $defaults, Phactory $phactory, $associations = array(), $pluralize = true) {
+        $this->_collection = new Collection($name, $phactory, $pluralize);
         $this->_defaults = $defaults;
         $this->_sequence = new Sequence();
 

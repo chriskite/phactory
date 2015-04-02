@@ -48,7 +48,7 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testDefineWithBlueprint()
     {
-        $blueprint = new Blueprint('user', array('name' => 'testuser'), array(), $this->phactory);
+        $blueprint = new Blueprint('user', array('name' => 'testuser'), $this->phactory);
         $this->phactory->define('user', $blueprint);
 
         $user = $this->phactory->create('user');

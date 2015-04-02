@@ -48,11 +48,11 @@ class Phactory {
      * @param array $defaults key => value pairs of field => value, or a phactory_blueprint
      * @param array $associations array of phactory_associations
      */
-    public function define($blueprint_name, $defaults, $associations = array()) {
+    public function define($blueprint_name, $defaults, $associations = array(), $pluralize = true) {
         if($defaults instanceof Blueprint) {
             $blueprint = $defaults;
         } else {
-            $blueprint = new Blueprint($blueprint_name, $defaults, $associations, $this);
+            $blueprint = new Blueprint($blueprint_name, $defaults, $this, $associations, $pluralize);
         }
         $this->_blueprints[$blueprint_name] = $blueprint;
     }
@@ -61,8 +61,8 @@ class Phactory {
     * alias for define per @jblotus pull request
     * eventually we should just rename the original function
     */
-    public function defineBlueprint($blueprint_name, $defaults, $associations = array()) {
-        $this->define($blueprint_name, $defaults, $associations);
+    public function defineBlueprint($blueprint_name, $defaults, $associations = array(), $pluralize = true) {
+        $this->define($blueprint_name, $defaults, $associations, $pluralize);
     }
 
     /*
@@ -134,12 +134,12 @@ class Phactory {
      * @param array $query a MongoDB query
      * @return array 
      */
-    public function get($collection_name, $query) {		
+    public function get($collection_name, $query) {
         if(!is_array($query)) {
             throw new \Exception("\$query must be an associative array of 'field => value' pairs");
         }
 
-        $collection = new Collection($collection_name, true, $this);
+        $collection = new Collection($collection_name, $this);
 				
         return $collection->findOne($query);
     }
