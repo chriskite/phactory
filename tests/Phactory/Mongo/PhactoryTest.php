@@ -45,6 +45,14 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
         $this->phactory->define('user', array('name' => 'testuser'));
     }
 
+    public function testDefineWithClosure()
+    {
+        // test that define() doesn't throw an exception when called correctly
+        $this->phactory->define('user', array('name' => function() {
+            return 'testuser';
+        }));
+    }
+
 
     public function testDefineWithBlueprint()
     {
@@ -69,6 +77,28 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
 
         // define and create user in db
         $this->phactory->define('user', array('name' => $name, 'tags' => $tags));
+        $user = $this->phactory->create('user');
+
+        // test returned array
+        $this->assertInternalType('array', $user);
+        $this->assertEquals($user['name'], $name);
+        $this->assertEquals($user['tags'], $tags);
+
+        // retrieve and test expected document from database
+        $db_user = $this->db->users->findOne();
+        $this->assertEquals($name, $db_user['name']);
+        $this->assertEquals($tags, $db_user['tags']);
+    }
+
+    public function testCreateWithClosure()
+    {
+        $name = 'testuser';
+        $tags = array('one','two','three');
+
+        // define and create user in db
+        $this->phactory->define('user', array('name' => function() use ($name) {
+            return $name;
+        }, 'tags' => $tags));
         $user = $this->phactory->create('user');
 
         // test returned array

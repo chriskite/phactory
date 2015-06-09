@@ -50,7 +50,12 @@ class Blueprint {
      * @return array the document
      */
     public function build($overrides = array(), $associated = array()) {
-        $data = $this->_defaults;
+        $data = array();
+
+        foreach($this->_defaults as $name => $value) {
+            $data[$name] = \Phactory\Utils::getValueOrReturn($value);
+        }
+
         if($associated) {
             foreach($associated as $name => $document) {
                 if(!isset($this->_associations[$name])) {
@@ -72,7 +77,7 @@ class Blueprint {
 
         if($overrides) {
             foreach($overrides as $field => $value) {
-                $data[$field] = $value;
+                $data[$field] = \Phactory\Utils::getValueOrReturn($value);
             }
         }
 
