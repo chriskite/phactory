@@ -14,7 +14,7 @@ class Row {
         }
         $this->_table = $table;
         foreach($data as $key => $value) {
-            $this->_storage[$key] = $value;
+            $this->_storage[$key] = \Phactory\Utils::getValueOrReturn($value);
         }
     }
 

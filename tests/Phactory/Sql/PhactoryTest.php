@@ -59,6 +59,14 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
         $this->phactory->define('user');
     }
 
+    public function testDefineWithClosure()
+    {
+        // test that define() doesn't throw an exception when called correctly
+        $this->phactory->define('user', array('name' => function() {
+            return 'testuser';
+        }));
+    }
+
 
     public function testDefineWithBlueprint()
     {
@@ -130,6 +138,29 @@ class PhactoryTest extends \PHPUnit_Framework_TestCase
 
         // define and create user in db
         $this->phactory->define('user', array('name' => $name));
+        $user = $this->phactory->create('user');
+
+        // test returned Phactory\Sql\Row
+        $this->assertInstanceOf('Phactory\Sql\Row', $user);
+        $this->assertEquals($user->name, $name);
+
+        // retrieve expected row from database
+        $stmt = $this->pdo->query("SELECT * FROM `users`");
+        $db_user = $stmt->fetch();
+
+        // test retrieved db row
+        $this->assertEquals($db_user['name'], $name);
+    }
+
+    public function testCreateWithClosure()
+    {
+        $name = 'testuser';
+
+        // define and create user in db
+        $this->phactory->define('user', array('name' => function() use ($name) {
+            return $name;
+        }));
+
         $user = $this->phactory->create('user');
 
         // test returned Phactory\Sql\Row

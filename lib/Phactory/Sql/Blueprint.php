@@ -87,7 +87,7 @@ class Blueprint {
 
         if($overrides) {
             foreach($overrides as $field => $value) {
-                $built->$field = $value;
+                $built->$field = \Phactory\Utils::getValueOrReturn($value);
             }
         }
 
@@ -151,11 +151,11 @@ class Blueprint {
     protected function _evalSequence(&$data) {
         $n = $this->_sequence->next();
         foreach($data as &$value) {
-            if(false !== strpos($value, '$')) {
+            if(is_string($value) && false !== strpos($value, '$')) {
                 $value = strtr($value, array('$n' => $n));
             }
 
-            if(preg_match_all('/#\{(.+)\}/U', $value, $matches)) {
+            if(is_string($value) && preg_match_all('/#\{(.+)\}/U', $value, $matches)) {
                 foreach($matches[1] as $match) {
                     $value = preg_replace('/#\{.+\}/U', eval('return ' . $match . ';'), $value, 1);
                 }
