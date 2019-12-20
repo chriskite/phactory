@@ -2,6 +2,7 @@ phpunit.xml
 *.swp
 *.db
 *.db-journal
+.idea/
 reports/
 vendor/
 composer.lock

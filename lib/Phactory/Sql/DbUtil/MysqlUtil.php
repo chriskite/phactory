@@ -12,7 +12,7 @@ class MysqlUtil extends AbstractDbUtil
         $table = $this->quoteIdentifier($table);
         $stmt = $this->_pdo->query("SHOW KEYS FROM $table WHERE Key_name = 'PRIMARY'");
         $result = $stmt->fetch();
-        return $result['Column_name'];
+        return is_array($result) ? ($result['Column_name'] ?? null) : null;
     }
 
     public function getColumns($table) {

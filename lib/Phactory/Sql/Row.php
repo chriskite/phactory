@@ -71,7 +71,7 @@ class Row {
                 $stmt->execute($params);
                 $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-                $this->_storage[$pk] = $result[$pk];
+                $this->_storage[$pk] = is_array($result) ? ($result[$pk] ?? null) : null;
             }
         }
 
