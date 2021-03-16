@@ -30,6 +30,11 @@ class Collection {
         return $this->_name;
     }
 
+    public function insert($data, $options) {
+        $coll = $this->_collection;
+        return $coll->insert($data,$options);
+    }
+
     public function __call($func, $args) {
         return call_user_func_array(array($this->_collection, $func), $args);
     }
